@@ -1,0 +1,16 @@
+#iago {
+	position: fixed;
+	bottom: 10px;
+	right: 10px;
+	box-sizing: border-box;
+	width: 1px;
+	max-width: 450px;
+	width: calc(100% - 20px);
+	background: rgba(255, 255, 255, 0.98);
+	border-radius: 5px;
+	box-shadow: 0 5px 40px rgba(0, 0, 0, 0.2);
+}
+
+#iago.hidden {
+	display: none !important;
+}

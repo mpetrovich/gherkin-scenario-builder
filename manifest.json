@@ -1,0 +1,62 @@
+{
+  "name": "Cypress Scenario Builder",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Generates Gherkin BDD scenarios",
+  "homepage_url": "https://github.com/nextbigsoundinc/cypress-scenario-builder",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["activeTab", "storage"],
+  "background": {
+    "scripts": [
+      "src/background.js"
+    ],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_icon": "icons/icon19.png",
+    "default_title": "Cypress Scenario Builder",
+    "default_popup": "src/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "vendor/jquery.min.js",
+        "vendor/jquery-ui.min.js",
+        "vendor/lodash.min.js",
+        "vendor/boundary/boundary.js",
+        "vendor/iframeResizer.min.js",
+        "src/steps.js",
+        "src/content.js"
+      ],
+      "css": [
+        "vendor/jquery-ui.min.css",
+        "vendor/boundary/boundary.css",
+        "src/injected.css",
+        "src/boxes.css"
+      ],
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    "vendor/jquery.min.js",
+    "vendor/iframeResizer.contentWindow.min.js",
+    "vendor/boundary/boundary-extra.css",
+    "vendor/fonts.css",
+    "vendor/icons.css",
+    "fonts/Roboto-Regular.ttf",
+    "fonts/Roboto-Bold.ttf",
+    "fonts/icomoon.eot",
+    "fonts/icomoon.ttf",
+    "fonts/icomoon.woff",
+    "fonts/icomoon.svg",
+    "src/box.js",
+    "src/content.css"
+  ]
+}

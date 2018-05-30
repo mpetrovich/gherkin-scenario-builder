@@ -1,0 +1,251 @@
+body {
+	font-family: Iago;
+	font-weight: normal;
+	font-size: 1em;
+	-webkit-font-smoothing: antialiased;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+:focus {
+	outline: none;
+}
+
+.hidden {
+	display: none !important;
+}
+
+.clearfix::after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+/*
+	Steps
+ */
+
+.steps-wrapper {
+	padding: 12px 15px 0;
+}
+
+.steps-heading {
+	display: block;
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+}
+
+.steps {
+	display: block;
+	width: 100%;
+	max-height: 229px;
+	overflow: auto;
+	overscroll-behavior-y: contain;
+	margin: 5px 0 0;
+	padding: 0;
+	font-family: inherit;
+	font-size: 0.8em;
+	line-height: 1.4;
+	border: none;
+	resize: none !important;
+}
+
+.step {
+	height: 2.2em;
+	margin: 3px 0;
+	line-height: 2.2em;
+	cursor: -webkit-grab;
+}
+
+.step:active {
+	cursor: -webkit-grabbing;
+}
+
+.step::before {
+	content: "☰";
+	padding-right: 10px;
+	color: rgba(0, 0, 0, 0.3);
+}
+
+.step em {
+	margin: 0 0.2em;
+	font-style: normal;
+	font-weight: bold;
+}
+
+.steps-text {
+	position: absolute;
+	z-index: -1;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+}
+
+.add-step {
+	width: 75%;
+	margin: 10px 0 5px;
+	font-size: 0.75em;
+}
+
+/*
+	Pick element
+ */
+
+body.-picking-element * {
+	pointer-events: none;
+}
+body.-picking-element .pick-element.-picking-element {
+	pointer-events: auto;
+}
+
+body.-picking-element .step,
+body.-picking-element .add-step,
+body.-picking-element .controls {
+	opacity: 0.3;
+}
+body.-picking-element .step.-picking-element {
+	opacity: 1;
+}
+
+.pick-element,
+.pick-string,
+.pick-number {
+	margin: 0 0.4em;
+	padding: 0.4em 0.6em;
+	font-size: 1em;
+	background: hsla(0, 0%, 75%, 0.5);
+	border: 1px solid transparent;
+}
+
+.pick-element {
+	cursor: pointer;
+}
+
+.pick-element.-picked {
+	font-weight: bold;
+	background: hsla(210, 100%, 75%, 0.5);
+}
+
+.pick-element.-picking-element {
+	background: none;
+	outline: 3px solid rgba(255, 0, 170, 0.75);
+}
+
+.pick-element .icon {
+	font-size: 0.8em;
+	margin-right: 0.2em;
+}
+
+.pick-string {
+	width: 15em;
+	background: transparent;
+	border: 1px solid hsla(0, 0%, 50%, 0.5);
+}
+
+.pick-number {
+	width: 4em;
+	background: transparent;
+	border: 1px solid hsla(0, 0%, 50%, 0.5);
+}
+
+/*
+	Controls
+ */
+
+.controls {
+	padding: 10px;
+}
+
+.btn,
+.btn:hover,
+.btn:focus {
+	height: 2.5em;
+	margin: 0;
+	padding: 0.4em 1.2em;
+	font-family: inherit;
+	font-weight: bold;
+	font-size: 0.8em;
+	line-height: 1.8em;
+	text-align: left;
+	text-transform: uppercase;
+	background: hsla(0, 0%, 85%, 0.5);
+	border: none;
+	border-bottom: 1px solid hsla(0, 0%, 70%, 0.5);
+	border-radius: 5px;
+	cursor: pointer;
+}
+.btn:hover {
+	background: hsla(0, 0%, 75%, 0.5);
+}
+.btn:active {
+	background: hsla(0, 0%, 40%, 0.5);
+	border-bottom: none;
+	border-top: 1px solid hsla(0, 0%, 30%, 0.5);
+}
+.btn + .btn {
+	margin-left: 0.5em;
+}
+
+.icon {
+	font-size: 0.8em;
+	margin-right: 0.3em;
+}
+
+.icon-media-record {
+	position: relative;
+	top: 0.1em;
+	font-size: 1.2em;
+}
+
+.btn.iago-record {
+	display: block;
+	float: left;
+	padding: 0.4em 0.8em;
+	padding-right: 1em;
+	background: hsla(0, 100%, 60%, 0.5);
+	border-bottom-color: hsla(0, 50%, 20%, 0.5);
+}
+.btn.iago-record:hover {
+	background: hsla(0, 100%, 50%, 0.5);
+}
+.btn.iago-record:active {
+	background: hsla(0, 100%, 30%, 0.5);
+}
+.-recording .btn.iago-record {
+	background: #333;
+	color: #fff;
+	border-bottom-color: #111;
+}
+.-recording .btn.iago-record .icon {
+	color: rgb(255, 48, 48);
+	animation: 500ms blink alternate infinite;
+}
+
+.btn.iago-copy {
+	display: block;
+	float: left;
+}
+
+.btn.iago-clear {
+	float: right;
+	background: none;
+	border-color: transparent;
+}
+.btn.iago-clear:hover {
+	color: #a00;
+}
+
+@keyframes blink {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}

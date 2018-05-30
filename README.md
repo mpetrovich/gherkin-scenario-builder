@@ -1,2 +1,2 @@
-Iago
+Cypress Scenario Builder
 ===
