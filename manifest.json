@@ -38,7 +38,6 @@
       "css": [
         "vendor/jquery-ui.min.css",
         "vendor/boundary/boundary.css",
-        "src/injected.css",
         "src/boxes.css"
       ],
       "all_frames": false

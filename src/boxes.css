@@ -1,4 +1,4 @@
-#iago {
+#cypress-scenario-builder {
 	position: fixed;
 	bottom: 10px;
 	right: 10px;
@@ -11,6 +11,22 @@
 	box-shadow: 0 5px 40px rgba(0, 0, 0, 0.2);
 }
 
-#iago.hidden {
+#cypress-scenario-builder.hidden {
 	display: none !important;
+}
+
+/* Add this via JS */
+.--cypress-scenario-builder-show-elements [test-el] {
+	outline: 3px solid rgba(255, 0, 170, 0.75);
+}
+
+#cypress-scenario-builder {
+	transition-property: width, height;
+	transition-duration: 0.1s;
+	transition-timing-function: ease-in-out;
+}
+
+#cypress-scenario-builder.--cypress-scenario-builder-collapsed {
+	width: 50px !important;
+	height: 50px !important;
 }

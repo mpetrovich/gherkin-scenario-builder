@@ -8,14 +8,16 @@ $(document).ready(function() {
 	var stepId = 1;
 	var isElemPickerActive = false;
 
-	const $iframeBody = Boundary.createBox('iago');
-	const $iframe = $('#iago');
+	const $iframeBody = Boundary.createBox('cypress-scenario-builder');
+	const $iframe = $('#cypress-scenario-builder');
 
-    Boundary.loadBoxJS('#iago', chrome.extension.getURL('vendor/iframeResizer.contentWindow.min.js'));
-	Boundary.loadBoxCSS('#iago', chrome.extension.getURL('vendor/fonts.css'));
-	Boundary.loadBoxCSS('#iago', chrome.extension.getURL('vendor/icons.css'));
-	Boundary.loadBoxCSS('#iago', chrome.extension.getURL('src/content.css'));
-    Boundary.loadBoxJS('#iago', chrome.extension.getURL('src/box.js'));
+	$iframe.addClass('--cypress-scenario-builder');
+
+    Boundary.loadBoxJS('#cypress-scenario-builder', chrome.extension.getURL('vendor/iframeResizer.contentWindow.min.js'));
+	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('vendor/fonts.css'));
+	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('vendor/icons.css'));
+	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('src/content.css'));
+    Boundary.loadBoxJS('#cypress-scenario-builder', chrome.extension.getURL('src/box.js'));
 
 	showPane(isActive);
 
@@ -130,6 +132,11 @@ $(document).ready(function() {
 		.addClass('controls clearfix')
 		.appendTo($container);
 
+	const $collapseToggle = $('<button type="button" />')
+		.html('<i class="icon icon-collapse"></i><i class="icon icon-expand"></i>')
+		.addClass('collapse-toggle')
+		.appendTo($container);
+
 	const $record = $('<button type="button" />')
 		.addClass('btn iago-record')
 		.appendTo($controls);
@@ -141,8 +148,14 @@ $(document).ready(function() {
 
 	const $clear = $('<button type="button" />')
 		.addClass('btn iago-clear')
-		.html('<i class="icon icon-remove"></i> Clear')
+		.html('<i class="icon icon-close"></i> Clear')
 		.appendTo($controls);
+
+	$collapseToggle.on('click', () => {
+		$collapseToggle.toggleClass('-collapsed');
+		$container.toggleClass('-collapsed');
+		$iframe.toggleClass('--cypress-scenario-builder-collapsed');
+	})
 
 	$record.on('click', () => {
 		setIsRecording(!isRecording);
