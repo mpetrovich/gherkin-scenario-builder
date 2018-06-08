@@ -1,11 +1,10 @@
 const stepTemplates = {
+	preconditions: {
+		loggedOut: 'I am logged out',
+		loggedIn: 'I am logged in as {string}',
+	},
 	actions: {
-		logOut: 'I log out',
-		logIn: 'I log in as {string}',
 		navigate: 'I navigate to {string}',
-		see: 'I see {element}',
-		seeCount: 'I see {number} instances of {element}',
-		notSee: 'I do not see {element}',
 		click: 'I click {element}',
 		set: 'I set {element} to {string}',
 	},
