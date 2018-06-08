@@ -12,15 +12,13 @@ $(document).ready(function() {
 	const $iframeBody = Boundary.createBox('cypress-scenario-builder');
 	const $iframe = $('#cypress-scenario-builder');
 
-	$iframe.addClass('--cypress-scenario-builder');
+	$iframe.addClass('--cypress-scenario-builder hidden');
 
     Boundary.loadBoxJS('#cypress-scenario-builder', chrome.extension.getURL('vendor/iframeResizer.contentWindow.min.js'));
 	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('vendor/fonts.css'));
 	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('vendor/icons.css'));
 	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('src/content.css'));
     Boundary.loadBoxJS('#cypress-scenario-builder', chrome.extension.getURL('src/box.js'));
-
-	showPane(isActive);
 
 	const $elementLabel = $('<div />')
 		.addClass('--cypress-scenario-builder-element-label')
@@ -45,7 +43,7 @@ $(document).ready(function() {
 		.addClass('steps hidden')
 		.appendTo($stepsWrapper);
 
-	$container.on('click', '.js-pick-element', function() {
+	$container.on('click', '.js-pick-element', function pickElement() {
 		const $pickElemButton = $(this);
 		const stepId = $pickElemButton.data('stepId');
 
@@ -69,6 +67,7 @@ $(document).ready(function() {
 			hideElementLabel();
 
 			_.set(step, 'params.element', elemName);
+			saveSteps();
 			renderSteps();
 
 			event.preventDefault();
@@ -120,6 +119,7 @@ $(document).ready(function() {
 
 		if (step) {
 			_.set(step, `params.${paramName}`, $input.val());
+			saveSteps();
 		}
 		else {
 			console.error(`No step found for step ID = ${stepId}`);
@@ -129,6 +129,7 @@ $(document).ready(function() {
 	$container.on('click', '.js-remove-step', function() {
 		const stepIndex = $(this).closest('[data-step-index]').data('stepIndex');
 		steps.splice(stepIndex, 1);
+		saveSteps();
 		renderSteps();
 	});
 
@@ -190,7 +191,7 @@ $(document).ready(function() {
 		$stepsText.val(stepsText);
 		copyText($iframe, $stepsText);
 		$copy.html('<i class="icon icon-copy"></i> Copied');
-		window.setTimeout(() => {
+		setTimeout(() => {
 			$copy.html('<i class="icon icon-copy"></i> Copy');
 		}, 2000);
 	});
@@ -198,18 +199,25 @@ $(document).ready(function() {
 	$clear.on('click', () => {
 		steps = [];
 		renderSteps();
+		saveSteps();
 	});
-
-	setIsRecording(false);
-	bindUserEvents();
-	renderSteps();
-
-	showPane(isActive);
 
 	listen('setActive', response => {
 		isActive = response.isActive;
 		showPane(isActive);
 	});
+
+	send('getActive', {}, response => {
+		isActive = response.isActive;
+		init();
+	});
+
+	function init() {
+		setIsRecording(false);
+		bindUserEvents();
+		reloadSteps();
+		showPane(isActive);
+	}
 
 	function showPane(isActive) {
 		$iframe.toggleClass('hidden', !isActive);
@@ -231,6 +239,7 @@ $(document).ready(function() {
 		$iframe.toggleClass('--cypress-scenario-builder-collapsed', isCollapsed);
 
 		if (!isCollapsed) {
+			resizeIframe();
 			setTimeout(resizeIframe, 100);
 		}
 	}
@@ -272,6 +281,7 @@ $(document).ready(function() {
 		});
 
 		steps = reorderedSteps;
+		saveSteps();
 	}
 
 	function setIsRecording(newIsRecording) {
@@ -285,9 +295,21 @@ $(document).ready(function() {
 	function addStep(type, params = {}) {
 		const template = _.get(stepTemplates, type);
 		steps.push({ id: stepId++, type, params, template });
+		saveSteps();
 
 		renderSteps();
 		scrollToBottom();
+	}
+
+	function saveSteps() {
+		send('setSteps', { steps });
+	}
+
+	function reloadSteps() {
+		send('getSteps', {}, response => {
+			steps = response.steps;
+			renderSteps();
+		});
 	}
 
 	function scrollToBottom() {

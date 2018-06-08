@@ -1,4 +1,5 @@
 var isActive = false;
+var stepsByTab = {};
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	console.log('request', request);
@@ -11,6 +12,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	else if (request.action === 'setActive') {
 		isActive = request.isActive;
 		response = { isActive };
+	}
+	else if (request.action === 'getSteps') {
+		const steps = stepsByTab[sender.tab.id] || [];
+		response = { steps };
+	}
+	else if (request.action === 'setSteps') {
+		stepsByTab[sender.tab.id] = request.steps;
+		response = {};
 	}
 	else {
 		response = {};
