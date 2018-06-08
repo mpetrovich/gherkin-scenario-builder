@@ -202,6 +202,7 @@ body.-picking-element .step.-picking-element {
 	background: none;
 	border: none;
 	cursor: pointer;
+	pointer-events: auto !important;
 }
 .-collapsed .collapse-toggle {
 	width: 100%;

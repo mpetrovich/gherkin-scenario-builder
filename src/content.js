@@ -7,6 +7,7 @@ $(document).ready(function() {
 	var steps = [];
 	var stepId = 1;
 	var isElemPickerActive = false;
+	var isCollapsed = false;
 
 	const $iframeBody = Boundary.createBox('cypress-scenario-builder');
 	const $iframe = $('#cypress-scenario-builder');
@@ -56,12 +57,13 @@ $(document).ready(function() {
 			let step = _.find(steps, ['id', stepId]);
 
 			if (step) {
-				_.set(step, 'params.element', elemName);
-				renderSteps();
-
 				isElemPickerActive = false;
 				setClasses();
 				setListeners();
+				setCollapsed(false);
+
+				_.set(step, 'params.element', elemName);
+				renderSteps();
 			}
 			else {
 				console.error(`No step found for step ID = ${stepId}`);
@@ -156,11 +158,7 @@ $(document).ready(function() {
 		.html('<i class="icon icon-trashcan"></i> Clear')
 		.appendTo($controls);
 
-	$collapseToggle.on('click', () => {
-		$collapseToggle.toggleClass('-collapsed');
-		$container.toggleClass('-collapsed');
-		$iframe.toggleClass('--cypress-scenario-builder-collapsed');
-	})
+	$collapseToggle.on('click', toggleCollapsed);
 
 	$record.on('click', () => {
 		setIsRecording(!isRecording);
@@ -198,6 +196,21 @@ $(document).ready(function() {
 
 		if (isActive && isFirstTime) {
 			isFirstTime = false;
+		}
+	}
+
+	function toggleCollapsed() {
+		setCollapsed(!isCollapsed);
+	}
+
+	function setCollapsed(newIsCollapsed) {
+		isCollapsed = newIsCollapsed;
+		$collapseToggle.toggleClass('-collapsed', isCollapsed);
+		$container.toggleClass('-collapsed', isCollapsed);
+		$iframe.toggleClass('--cypress-scenario-builder-collapsed', isCollapsed);
+
+		if (!isCollapsed) {
+			setTimeout(resizeIframe, 100);
 		}
 	}
 
@@ -297,7 +310,7 @@ $(document).ready(function() {
 					return `<input type="number" class="pick-number" data-step-id="${step.id}" data-param-name="number" value="${step.params.number}">`;
 				}
 				else if (param === '{string}') {
-					return `<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="string" value="${step.params.string}">`;
+					return `<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="string" value="${step.params.string || '<string>'}">`;
 				}
 				else if (param === '{element}') {
 					let elemName = step.params.element || '<i class="icon icon-mouse-pointer"></i> Choose element';
