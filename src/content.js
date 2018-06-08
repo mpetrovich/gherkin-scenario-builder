@@ -103,6 +103,12 @@ $(document).ready(function() {
 		}
 	});
 
+	$container.on('click', '.js-remove-step', function() {
+		const stepIndex = $(this).closest('[data-step-index]').data('stepIndex');
+		steps.splice(stepIndex, 1);
+		renderSteps();
+	});
+
 	/*
 		"Add step" dropdown
 	 */
@@ -147,7 +153,7 @@ $(document).ready(function() {
 
 	const $clear = $('<button type="button" />')
 		.addClass('btn iago-clear')
-		.html('<i class="icon icon-close"></i> Clear')
+		.html('<i class="icon icon-trashcan"></i> Clear')
 		.appendTo($controls);
 
 	$collapseToggle.on('click', () => {
@@ -306,7 +312,12 @@ $(document).ready(function() {
 				}
 			});
 
-			return `<div class="step" data-step-index="${index}">${text}</div>`;
+			return `
+				<div class="step" data-step-index="${index}">
+					${text}
+					<i class="remove-step icon-close js-remove-step"></i>
+				</div>
+			`;
 		});
 	}
 

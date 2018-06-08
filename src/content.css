@@ -32,13 +32,13 @@ body {
  */
 
 .steps-wrapper {
-	padding: 12px 15px 0;
+	padding: 12px 0 0;
 }
 
 .steps-heading {
 	display: block;
 	margin: 0;
-	padding: 0;
+	padding: 0 15px;
 	font-size: 1em;
 }
 
@@ -58,20 +58,32 @@ body {
 }
 
 .step {
+	position: relative;
+	box-sizing: content-box;
 	height: 2.2em;
 	margin: 3px 0;
+	padding: 2px 15px;
 	line-height: 2.2em;
 	cursor: -webkit-grab;
+	background: #fff;
 }
 
 .step:active {
 	cursor: -webkit-grabbing;
 }
 
+.step.ui-sortable-helper {
+	box-shadow: 0 5px 40px rgba(0, 0, 0, 0.2);
+}
+
 .step::before {
 	content: "☰";
 	padding-right: 10px;
-	color: rgba(0, 0, 0, 0.3);
+	color: #000;
+	opacity: 0.3;
+}
+.step:hover::before {
+	opacity: 0.6;
 }
 
 .step em {
@@ -89,9 +101,23 @@ body {
 }
 
 .add-step {
-	width: 75%;
-	margin: 10px 0 5px;
+	width: 45%;
+	margin: 10px 10px 5px;
 	font-size: 0.75em;
+}
+
+.remove-step {
+	position: absolute;
+	right: 15px;
+	top: 50%;
+	transform: translateY(-50%);
+	padding: 0.3em;
+	cursor: pointer;
+	color: #000;
+	opacity: 0.3;
+}
+.step:hover .remove-step {
+	opacity: 0.6;
 }
 
 /*
@@ -144,7 +170,7 @@ body.-picking-element .step.-picking-element {
 }
 
 .pick-string {
-	width: 15em;
+	width: 12em;
 	background: transparent;
 	border: 1px solid hsla(0, 0%, 50%, 0.5);
 }
