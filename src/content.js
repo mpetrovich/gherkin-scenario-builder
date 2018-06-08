@@ -118,9 +118,8 @@ $(document).ready(function() {
 		.appendTo($stepsWrapper);
 
 	$addStep.on('change', () => {
-		let stepKey = $addStep.find('option:selected').val();
-		let stepTemplate = _.get(stepTemplates, stepKey);
-		addStepTemplate(stepKey, stepTemplate);
+		const type = $addStep.find('option:selected').val();
+		addStep(type);
 		$addStep.find('option[disabled]').first().prop('selected', true);
 	});
 
@@ -243,16 +242,10 @@ $(document).ready(function() {
 		$record.html(`<i class="icon icon-media-record"></i>${text}`);
 	}
 
-	function addStep(type, params) {
-		if (isActive && isRecording) {
-			steps.push({ type, params });
-			renderSteps();
-			scrollToBottom();
-		}
-	}
+	function addStep(type, params = {}) {
+		const template = _.get(stepTemplates, type);
+		steps.push({ id: stepId++, type, params, template });
 
-	function addStepTemplate(type, template) {
-		steps.push({ id: stepId++, type, template });
 		renderSteps();
 		scrollToBottom();
 	}
@@ -291,44 +284,30 @@ $(document).ready(function() {
 
 		var prefix = GIVEN;
 
-		return _(steps)
-			.map((step, index) => {
-				if (step.template) {
-					let params = step.params || {};
-					text = step.template.replace(/({string}|{number}|{element})/g, (match, param) => {
-						if (param === '{number}') {
-							return `<input type="number" class="pick-number" data-step-id="${step.id}" data-param-name="number" value="${params.number}">`;
-						}
-						else if (param === '{string}') {
-							return `<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="string" value="${params.string}">`;
-						}
-						else if (param === '{element}') {
-							let elemName = params.element || '<i class="icon icon-mouse-pointer"></i> Choose element';
-							let className = params.element ? '-picked' : '';
-							return `
-							<button class="pick-element js-pick-element ${className}" data-step-id="${step.id}">
-								${elemName}
-							</button>`;
-						}
-						else {
-							return param;
-						}
-					});
+		return _.map(steps, (step, index) => {
+
+			text = step.template.replace(/({string}|{number}|{element})/g, (match, param) => {
+				if (param === '{number}') {
+					return `<input type="number" class="pick-number" data-step-id="${step.id}" data-param-name="number" value="${step.params.number}">`;
+				}
+				else if (param === '{string}') {
+					return `<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="string" value="${step.params.string}">`;
+				}
+				else if (param === '{element}') {
+					let elemName = step.params.element || '<i class="icon icon-mouse-pointer"></i> Choose element';
+					let className = step.params.element ? '-picked' : '';
+					return `
+					<button class="pick-element js-pick-element ${className}" data-step-id="${step.id}">
+						${elemName}
+					</button>`;
 				}
 				else {
-					let stepTemplate = _.get(stepTemplates, step.type);
-					text = getFormattedStep(stepTemplate, step.params);
+					return param;
 				}
+			});
 
-				return `<div class="step" data-step-index="${index}">${text}</div>`;
-			})
-			.value();
-	}
-
-	function getFormattedStep(stepTemplate, params) {
-		return _.reduce(params, (stepText, paramValue, paramName) => {
-			return stepText.replace(`{${paramName}}`, `<em>${paramValue}</em>`);
-		}, stepTemplate);
+			return `<div class="step" data-step-index="${index}">${text}</div>`;
+		});
 	}
 
 	function copyText($iframe, $input) {
@@ -389,7 +368,7 @@ $(document).ready(function() {
 				return;
 			}
 
-			if (currentInput && inputs.has(currentInput.element)) {
+			if (currentInput && inputs.has(currentInput.element) && isActive && isRecording) {
 				addStep('actions.set', { element: currentInput.element, string: currentInput.value });
 			}
 			currentInput = null;
@@ -402,7 +381,10 @@ $(document).ready(function() {
 		$(document).on('change', `select[${attrName}]`, function() {
 			var element = $(this).attr(attrName);
 			var value = $(this).find('option:selected').text();
-			addStep('actions.set', { element, string: value });
+
+			if (isActive && isRecording) {
+				addStep('actions.set', { element, string: value });
+			}
 		});
 
 		/*
@@ -412,7 +394,10 @@ $(document).ready(function() {
 		$(document).on('change', `[${attrName}]:checkbox`, function() {
 			var element = $(this).attr(attrName);
 			var value = $(this).attr('test-val') || ($(this).is(':checked') ? 'checked' : 'unchecked');
-			addStep('actions.set', { element, string: value });
+
+			if (isActive && isRecording) {
+				addStep('actions.set', { element, string: value });
+			}
 		});
 
 		/*
@@ -422,7 +407,10 @@ $(document).ready(function() {
 		$(document).on('change', `[${attrName}]:radio`, function() {
 			var element = $(this).attr(attrName);
 			var value = $(this).filter(':checked').val();
-			addStep('actions.set', { element, string: value });
+
+			if (isActive && isRecording) {
+				addStep('actions.set', { element, string: value });
+			}
 		});
 
 		/*
@@ -444,7 +432,10 @@ $(document).ready(function() {
 			}
 
 			var element = $(this).attr(attrName);
-			addStep('actions.click', { element });
+
+			if (isActive && isRecording) {
+				addStep('actions.click', { element });
+			}
 		});
 	}
 
