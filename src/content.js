@@ -67,8 +67,7 @@ $(document).ready(function() {
 			hideElementLabel();
 
 			_.set(step, 'params.element', elemName);
-			saveSteps();
-			renderSteps();
+			setSteps(steps);
 
 			event.preventDefault();
 			event.stopPropagation();
@@ -119,7 +118,7 @@ $(document).ready(function() {
 
 		if (step) {
 			_.set(step, `params.${paramName}`, $input.val());
-			saveSteps();
+			setSteps(steps);
 		}
 		else {
 			console.error(`No step found for step ID = ${stepId}`);
@@ -129,8 +128,7 @@ $(document).ready(function() {
 	$container.on('click', '.js-remove-step', function() {
 		const stepIndex = $(this).closest('[data-step-index]').data('stepIndex');
 		steps.splice(stepIndex, 1);
-		saveSteps();
-		renderSteps();
+		setSteps(steps);
 	});
 
 	/*
@@ -197,9 +195,7 @@ $(document).ready(function() {
 	});
 
 	$clear.on('click', () => {
-		steps = [];
-		renderSteps();
-		saveSteps();
+		setSteps([]);
 	});
 
 	listen('setActive', response => {
@@ -280,8 +276,7 @@ $(document).ready(function() {
 			reorderedSteps.push(steps[index]);
 		});
 
-		steps = reorderedSteps;
-		saveSteps();
+		setSteps(reorderedSteps);
 	}
 
 	function setIsRecording(newIsRecording) {
@@ -295,10 +290,39 @@ $(document).ready(function() {
 	function addStep(type, params = {}) {
 		const template = _.get(stepTemplates, type);
 		steps.push({ id: stepId++, type, params, template });
-		saveSteps();
-
-		renderSteps();
+		setSteps(steps);
 		scrollToBottom();
+	}
+
+	function setSteps(newSteps) {
+		steps = newSteps;
+		steps = addPrefixes(steps);
+		saveSteps();
+		renderSteps();
+	}
+
+	function addPrefixes(steps) {
+		const lastActionIndex = _.findLastIndex(steps, step => step.type.startsWith('actions'));
+		var isGivenAnd = false;
+		var isThenAnd = false;
+
+		for (let i = 0; i < steps.length; i++) {
+			const step = steps[i];
+
+			if (i < lastActionIndex) {
+				step.prefix = isGivenAnd ? 'and' : 'given';
+				isGivenAnd = true;
+			}
+			else if (i === lastActionIndex) {
+				step.prefix = 'when';
+			}
+			else {
+				step.prefix = isThenAnd ? 'and' : 'then';
+				isThenAnd = true;
+			}
+		}
+
+		return steps;
 	}
 
 	function saveSteps() {
@@ -307,8 +331,7 @@ $(document).ready(function() {
 
 	function reloadSteps() {
 		send('getSteps', {}, response => {
-			steps = response.steps;
-			renderSteps();
+			setSteps(response.steps);
 		});
 	}
 
@@ -317,17 +340,12 @@ $(document).ready(function() {
 	}
 
 	function getCopyableSteps(steps) {
-		const GIVEN = 'Given';
-		const WHEN = 'When';
-		const THEN = 'Then';
-		const AND = 'And';
-
-		var prefix = GIVEN;
-
 		return _(steps)
 			.map(step => {
-				let stepTemplate = _.get(stepTemplates, step.type);
-				return getCopyableStep(stepTemplate, step.params);
+				const stepTemplate = _.get(stepTemplates, step.type);
+				const interpolated = getCopyableStep(stepTemplate, step.params);
+				const prefix = _.startCase(step.prefix);
+				return `${prefix} ${interpolated}`;
 			})
 			.join('\n');
 	}
@@ -339,13 +357,6 @@ $(document).ready(function() {
 	}
 
 	function getFormattedSteps(steps) {
-		const GIVEN = 'Given';
-		const WHEN = 'When';
-		const THEN = 'Then';
-		const AND = 'And';
-
-		var prefix = GIVEN;
-
 		return _.map(steps, (step, index) => {
 
 			text = step.template.replace(/({string}|{number}|{element})/g, (match, param) => {
@@ -368,9 +379,11 @@ $(document).ready(function() {
 				}
 			});
 
+			const prefix = step.prefix ? `${_.startCase(step.prefix)} ` : '';
+
 			return `
 				<div class="step" data-step-index="${index}">
-					${text}
+					${prefix}${text}
 					<i class="remove-step icon-close js-remove-step"></i>
 				</div>
 			`;
