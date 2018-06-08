@@ -22,6 +22,10 @@ $(document).ready(function() {
 
 	showPane(isActive);
 
+	const $elementLabel = $('<div />')
+		.addClass('--cypress-scenario-builder-element-label')
+		.appendTo(document.body);
+
 	const $container = $('<div />')
 		.addClass('container')
 		.appendTo($iframeBody);
@@ -52,7 +56,7 @@ $(document).ready(function() {
 			$pickElemButton.closest('.step').toggleClass('-picking-element', isElemPickerActive);
 		};
 
-		const eventListener = function(event) {
+		const clickEventListener = function(event) {
 			let elemName = $(this).attr(attrName);
 			let step = _.find(steps, ['id', stepId]);
 
@@ -74,14 +78,35 @@ $(document).ready(function() {
 			this.blur();
 		};
 
+		const mouseEnterEventListener = function(event) {
+			const rect = this.getBoundingClientRect();
+
+			$elementLabel
+				.text($(this).attr(attrName))
+				.css({
+					display: 'block',
+					position: 'fixed',
+					left: rect.left,
+					top: rect.bottom,
+				});
+		};
+
+		const mouseLeaveEventListener = function(event) {
+			$elementLabel.css({ display: 'none' });
+		};
+
 		const setListeners = () => {
 			// Hijacks clicks on all possible elements
 			$(document).find(`[${attrName}]`).each(function() {
 				if (isElemPickerActive) {
-					this.addEventListener('click', eventListener, { capture: true });
+					this.addEventListener('click', clickEventListener, { capture: true });
+					this.addEventListener('mouseenter', mouseEnterEventListener, { capture: true });
+					this.addEventListener('mouseleave', mouseLeaveEventListener, { capture: true });
 				}
 				else {
-					this.removeEventListener('click', eventListener, { capture: true });
+					this.removeEventListener('click', clickEventListener, { capture: true });
+					this.removeEventListener('mouseenter', mouseEnterEventListener, { capture: true });
+					this.removeEventListener('mouseleave', mouseLeaveEventListener, { capture: true });
 				}
 			});
 		};
@@ -310,7 +335,7 @@ $(document).ready(function() {
 					return `<input type="number" class="pick-number" data-step-id="${step.id}" data-param-name="number" value="${step.params.number}">`;
 				}
 				else if (param === '{string}') {
-					return `<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="string" value="${step.params.string || '<string>'}">`;
+					return `<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="string" value="${step.params.string || ''}">`;
 				}
 				else if (param === '{element}') {
 					let elemName = step.params.element || '<i class="icon icon-mouse-pointer"></i> Choose element';

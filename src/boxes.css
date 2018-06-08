@@ -18,6 +18,15 @@
 /* Add this via JS */
 .--cypress-scenario-builder-show-elements [test-el] {
 	outline: 3px solid rgba(255, 0, 170, 0.75);
+	cursor: pointer;
+}
+
+.--cypress-scenario-builder-show-elements .--cypress-scenario-builder-element-label {
+	margin: 3px 0 0 -3px;  /* for outline */
+	padding: 0.5em 1em;
+	font: normal 12px arial, sans-serif;
+	color: #fff;
+	background: rgba(255, 0, 170, 1);
 }
 
 #cypress-scenario-builder {
