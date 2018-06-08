@@ -229,7 +229,7 @@ body.-picking-element .step.-picking-element {
 .btn:focus {
 	height: 2.5em;
 	margin: 0;
-	padding: 0.4em 1.2em;
+	padding: 0.3em 1.2em 0.4em;
 	font-family: inherit;
 	font-weight: bold;
 	font-size: 0.8em;
@@ -264,41 +264,41 @@ body.-picking-element .step.-picking-element {
 	font-size: 1.2em;
 }
 
-.btn.iago-record {
+.btn.record {
 	display: block;
 	float: left;
-	padding: 0.4em 0.8em;
+	padding: 0.3em 0.8em 0.4em;
 	padding-right: 1em;
 	background: hsla(0, 100%, 60%, 0.5);
 	border-bottom-color: hsla(0, 50%, 20%, 0.5);
 }
-.btn.iago-record:hover {
+.btn.record:hover {
 	background: hsla(0, 100%, 50%, 0.5);
 }
-.btn.iago-record:active {
+.btn.record:active {
 	background: hsla(0, 100%, 30%, 0.5);
 }
-.-recording .btn.iago-record {
+.-recording .btn.record {
 	background: #333;
 	color: #fff;
 	border-bottom-color: #111;
 }
-.-recording .btn.iago-record .icon {
+.-recording .btn.record .icon {
 	color: rgb(255, 48, 48);
 	animation: 500ms blink alternate infinite;
 }
 
-.btn.iago-copy {
+.btn.copy {
 	display: block;
 	float: left;
 }
 
-.btn.iago-clear {
+.btn.clear {
 	float: right;
 	background: none;
 	border-color: transparent;
 }
-.btn.iago-clear:hover {
+.btn.clear:hover {
 	color: #a00;
 }
 

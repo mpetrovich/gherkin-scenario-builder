@@ -167,16 +167,16 @@ $(document).ready(function() {
 		.appendTo($container);
 
 	const $record = $('<button type="button" />')
-		.addClass('btn iago-record')
+		.addClass('btn record')
 		.appendTo($controls);
 
 	const $copy = $('<button type="button" />')
-		.addClass('btn iago-copy')
+		.addClass('btn copy')
 		.html('<i class="icon icon-copy"></i> Copy')
 		.appendTo($controls);
 
 	const $clear = $('<button type="button" />')
-		.addClass('btn iago-clear')
+		.addClass('btn clear')
 		.html('<i class="icon icon-trashcan"></i> Clear')
 		.appendTo($controls);
 
@@ -240,7 +240,7 @@ $(document).ready(function() {
 
 		if (!isCollapsed) {
 			resizeIframe();
-			setTimeout(resizeIframe, 100);
+			setTimeout(resizeIframe, 50);
 		}
 	}
 
