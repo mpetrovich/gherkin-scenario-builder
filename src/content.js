@@ -56,22 +56,20 @@ $(document).ready(function() {
 			$pickElemButton.closest('.step').toggleClass('-picking-element', isElemPickerActive);
 		};
 
+		const hideElementLabel = () => $elementLabel.css({ display: 'none' });
+
 		const clickEventListener = function(event) {
 			let elemName = $(this).attr(attrName);
 			let step = _.find(steps, ['id', stepId]);
 
-			if (step) {
-				isElemPickerActive = false;
-				setClasses();
-				setListeners();
-				setCollapsed(false);
+			isElemPickerActive = false;
+			setClasses();
+			setListeners();
+			setCollapsed(false);
+			hideElementLabel();
 
-				_.set(step, 'params.element', elemName);
-				renderSteps();
-			}
-			else {
-				console.error(`No step found for step ID = ${stepId}`);
-			}
+			_.set(step, 'params.element', elemName);
+			renderSteps();
 
 			event.preventDefault();
 			event.stopPropagation();
@@ -91,9 +89,7 @@ $(document).ready(function() {
 				});
 		};
 
-		const mouseLeaveEventListener = function(event) {
-			$elementLabel.css({ display: 'none' });
-		};
+		const mouseLeaveEventListener = hideElementLabel;
 
 		const setListeners = () => {
 			// Hijacks clicks on all possible elements

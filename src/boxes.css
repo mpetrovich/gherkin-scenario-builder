@@ -21,6 +21,9 @@
 	cursor: pointer;
 }
 
+.--cypress-scenario-builder-element-label {
+	display: none;
+}
 .--cypress-scenario-builder-show-elements .--cypress-scenario-builder-element-label {
 	margin: 3px 0 0 -3px;  /* for outline */
 	padding: 0.5em 1em;
