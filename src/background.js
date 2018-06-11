@@ -1,4 +1,5 @@
 var isActive = false;
+var isRecordingByTab = {};
 var stepsByTab = {};
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -12,6 +13,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	else if (request.action === 'setActive') {
 		isActive = request.isActive;
 		response = { isActive };
+		notifyPage({ action: request.action, ...response });
+	}
+	else if (request.action === 'getRecording') {
+		response = { isRecording: isRecordingByTab[sender.tab.id] || false };
+	}
+	else if (request.action === 'setRecording') {
+		isRecordingByTab[sender.tab.id] = request.isRecording;
+		response = { isRecording: isRecordingByTab[sender.tab.id] };
 	}
 	else if (request.action === 'getSteps') {
 		const steps = stepsByTab[sender.tab.id] || [];
@@ -19,14 +28,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	}
 	else if (request.action === 'setSteps') {
 		stepsByTab[sender.tab.id] = request.steps;
-		response = {};
+		response = { steps: stepsByTab[sender.tab.id] };
 	}
 	else {
 		response = {};
 	}
 
 	sendResponse(response);
-	notifyPage({ action: request.action, ...response });
 
 	console.log('response', response);
 });

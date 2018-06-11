@@ -202,20 +202,28 @@ $(document).ready(function() {
 		showPane(isActive);
 	});
 
+	listen('setRecording', response => {
+		setIsRecording(response.isRecording);
+	});
+
 	listen('navigate', response => {
 		addStep('actions.navigate', { string: response.url });
 	});
 
 	send('getActive', {}, response => {
 		isActive = response.isActive;
-		init();
+		showPane(isActive);
 	});
 
+	send('getRecording', {}, response => {
+		setIsRecording(response.isRecording);
+	});
+
+	init();
+
 	function init() {
-		setIsRecording(false);
 		bindUserEvents();
 		reloadSteps();
-		showPane(isActive);
 	}
 
 	function showPane(isActive) {
@@ -284,6 +292,11 @@ $(document).ready(function() {
 
 	function setIsRecording(newIsRecording) {
 		isRecording = newIsRecording;
+		send('setRecording', { isRecording });
+		renderRecordingState();
+	}
+
+	function renderRecordingState() {
 		$container.toggleClass('-recording', isRecording);
 
 		const text = isRecording ? 'Recording' : 'Record';
