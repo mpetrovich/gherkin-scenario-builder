@@ -58,12 +58,15 @@ body {
 }
 
 .step {
+	display: flex;
 	position: relative;
 	box-sizing: content-box;
 	height: 2.2em;
 	margin: 3px 0;
 	padding: 2px 15px;
+	padding-right: 40px;
 	line-height: 2.2em;
+	white-space: nowrap;
 	cursor: -webkit-grab;
 	background: #fff;
 }
@@ -152,6 +155,9 @@ body.-picking-element .step.-picking-element {
 
 .pick-element {
 	cursor: pointer;
+	max-width: 15em;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .pick-element.-picked {
@@ -170,7 +176,7 @@ body.-picking-element .step.-picking-element {
 }
 
 .pick-string {
-	width: 12em;
+	width: 10em;
 	background: transparent;
 	border: 1px solid hsla(0, 0%, 50%, 0.5);
 }

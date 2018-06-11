@@ -367,7 +367,7 @@ $(document).ready(function() {
 					let elemName = step.params.element || '<i class="icon icon-mouse-pointer"></i> Choose element';
 					let className = step.params.element ? '-picked' : '';
 					return `
-					<button class="pick-element js-pick-element ${className}" data-step-id="${step.id}">
+					<button class="pick-element js-pick-element ${className}" data-step-id="${step.id}" title="${elemName}">
 						${elemName}
 					</button>`;
 				}
