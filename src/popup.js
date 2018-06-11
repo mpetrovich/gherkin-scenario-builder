@@ -9,7 +9,7 @@ $toggle.on('click', function() {
 
 function setLabel(isActive) {
 	$toggle
-		.text(isActive ? 'Hide' : 'Show')
+		.text(isActive ? 'ON' : 'OFF')
 		.toggleClass('-active', isActive)
 		.removeClass('-loading');
 }
