@@ -207,7 +207,10 @@ $(document).ready(function() {
 	});
 
 	listen('navigate', response => {
-		addStep('actions.navigate', { string: response.url });
+		const path = response.path.endsWith('/') ? response.path.substr(0, response.path.length - 1) : response.path;  // Removes trailing slash
+		const predicate = valueToMatch => value => _.isRegExp(value) ? value.test(valueToMatch) : value === valueToMatch;
+		const page = _.findKey(pages, predicate(path)) || _.findKey(pages, predicate(response.url)) || response.url;
+		addStep('actions.navigate', { string: page });
 	});
 
 	send('getActive', {}, response => {

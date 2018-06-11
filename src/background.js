@@ -43,8 +43,12 @@ chrome.webNavigation.onBeforeNavigate.addListener(details => {
 	const { tabId, url } = details;
 	const isRecording = isRecordingByTab[tabId];
 
+	const anchor = document.createElement('a');
+	anchor.href = url;
+	const path = anchor.pathname;
+
 	if (isActive && isRecording && url !== 'about:blank') {
-		notifyPage({ action: 'navigate', url }, tabId);
+		notifyPage({ action: 'navigate', url, path }, tabId);
 	}
 });
 

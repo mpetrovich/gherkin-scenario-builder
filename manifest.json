@@ -33,6 +33,7 @@
         "vendor/boundary/boundary.js",
         "vendor/iframeResizer.min.js",
         "src/step-templates.js",
+        "src/pages.js",
         "src/steps.js",
         "src/content.js"
       ],
