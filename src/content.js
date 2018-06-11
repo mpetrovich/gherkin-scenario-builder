@@ -202,6 +202,10 @@ $(document).ready(function() {
 		showPane(isActive);
 	});
 
+	listen('navigate', response => {
+		addStep('actions.navigate', { string: response.url });
+	});
+
 	send('getActive', {}, response => {
 		isActive = response.isActive;
 		init();

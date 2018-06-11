@@ -31,9 +31,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	console.log('response', response);
 });
 
-function notifyPage(data) {
+chrome.webNavigation.onBeforeNavigate.addListener(details => {
+	const { tabId, url } = details;
+
+	if (!isActive || url === 'about:blank') {
+		return;
+	}
+
+	notifyPage({ action: 'navigate', url }, tabId);
+});
+
+function notifyPage(data, tabId = null) {
 	console.log('dispatch', data);
-	chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-		chrome.tabs.sendMessage(tabs[0].id, data);
+	chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+		chrome.tabs.sendMessage(tabId || tabs[0].id, data);
 	});
 }
