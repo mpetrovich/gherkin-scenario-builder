@@ -4,8 +4,7 @@ $(document).ready(function() {
 	var isFirstTime = true;
 	var isActive = false;
 	var isRecording = false;
-	var steps = [];
-	var stepId = 1;
+	var steps = new Steps(stepTemplates);
 	var isElemPickerActive = false;
 	var isCollapsed = false;
 
@@ -58,7 +57,7 @@ $(document).ready(function() {
 
 		const clickEventListener = function(event) {
 			let elemName = $(this).attr(attrName);
-			let step = _.find(steps, ['id', stepId]);
+			let step = steps.find(stepId);
 
 			isElemPickerActive = false;
 			setClasses();
@@ -67,7 +66,7 @@ $(document).ready(function() {
 			hideElementLabel();
 
 			_.set(step, 'params.element', elemName);
-			setSteps(steps);
+			onStepsUpdated();
 
 			event.preventDefault();
 			event.stopPropagation();
@@ -113,12 +112,12 @@ $(document).ready(function() {
 	$container.on('change', '.pick-string, .pick-number', function() {
 		const $input = $(this);
 		const stepId = $input.data('stepId');
-		const step = _.find(steps, ['id', stepId]);
+		const step = steps.find(stepId);
 		const paramName = $input.data('paramName');
 
 		if (step) {
 			_.set(step, `params.${paramName}`, $input.val());
-			setSteps(steps);
+			onStepsUpdated();
 		}
 		else {
 			console.error(`No step found for step ID = ${stepId}`);
@@ -127,8 +126,8 @@ $(document).ready(function() {
 
 	$container.on('click', '.js-remove-step', function() {
 		const stepIndex = $(this).closest('[data-step-index]').data('stepIndex');
-		steps.splice(stepIndex, 1);
-		setSteps(steps);
+		steps.remove(stepIndex);
+		onStepsUpdated();
 	});
 
 	/*
@@ -185,7 +184,7 @@ $(document).ready(function() {
 	});
 
 	$copy.on('click', () => {
-		let stepsText = getCopyableSteps(steps);
+		let stepsText = getCopyableSteps(steps.get());
 		$stepsText.val(stepsText);
 		copyText($iframe, $stepsText);
 		$copy.html('<i class="icon icon-copy"></i> Copied');
@@ -246,7 +245,7 @@ $(document).ready(function() {
 	}
 
 	function renderSteps() {
-		let stepsFormatted = getFormattedSteps(steps);
+		let stepsFormatted = getFormattedSteps(steps.get());
 
 		if (stepsFormatted.length) {
 			$steps.html(stepsFormatted.join(''));
@@ -273,7 +272,7 @@ $(document).ready(function() {
 		$steps.find('.step').each(function() {
 			let $step = $(this);
 			let index = $step.data('stepIndex');
-			reorderedSteps.push(steps[index]);
+			reorderedSteps.push(steps.get(index));
 		});
 
 		setSteps(reorderedSteps);
@@ -288,45 +287,23 @@ $(document).ready(function() {
 	}
 
 	function addStep(type, params = {}) {
-		const template = _.get(stepTemplates, type);
-		steps.push({ id: stepId++, type, params, template });
-		setSteps(steps);
+		steps.add(type, params);
+		onStepsUpdated();
 		scrollToBottom();
 	}
 
 	function setSteps(newSteps) {
-		steps = newSteps;
-		steps = addPrefixes(steps);
+		steps.set(newSteps);
+		onStepsUpdated();
+	}
+
+	function onStepsUpdated() {
 		saveSteps();
 		renderSteps();
 	}
 
-	function addPrefixes(steps) {
-		const lastActionIndex = _.findLastIndex(steps, step => step.type.startsWith('actions'));
-		var isGivenAnd = false;
-		var isThenAnd = false;
-
-		for (let i = 0; i < steps.length; i++) {
-			const step = steps[i];
-
-			if (i < lastActionIndex) {
-				step.prefix = isGivenAnd ? 'and' : 'given';
-				isGivenAnd = true;
-			}
-			else if (i === lastActionIndex) {
-				step.prefix = 'when';
-			}
-			else {
-				step.prefix = isThenAnd ? 'and' : 'then';
-				isThenAnd = true;
-			}
-		}
-
-		return steps;
-	}
-
 	function saveSteps() {
-		send('setSteps', { steps });
+		send('setSteps', { steps: steps.get() });
 	}
 
 	function reloadSteps() {

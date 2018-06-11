@@ -32,6 +32,7 @@
         "vendor/lodash.min.js",
         "vendor/boundary/boundary.js",
         "vendor/iframeResizer.min.js",
+        "src/step-templates.js",
         "src/steps.js",
         "src/content.js"
       ],
