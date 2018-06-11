@@ -41,12 +41,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.webNavigation.onBeforeNavigate.addListener(details => {
 	const { tabId, url } = details;
+	const isRecording = isRecordingByTab[tabId];
 
-	if (!isActive || url === 'about:blank') {
-		return;
+	if (isActive && isRecording && url !== 'about:blank') {
+		notifyPage({ action: 'navigate', url }, tabId);
 	}
-
-	notifyPage({ action: 'navigate', url }, tabId);
 });
 
 function notifyPage(data, tabId = null) {
