@@ -9,6 +9,7 @@ $(document).ready(function() {
 	var isCollapsed = false;
 	var featureName = 'Example';
 	var scenarioName = 'Example';
+	var lastUserInteractionTime = Date.now();
 
 	const $iframeBody = Boundary.createBox('cypress-scenario-builder');
 	const $iframe = $('#cypress-scenario-builder');
@@ -237,6 +238,13 @@ ${stepsText}
 	});
 
 	listen('navigate', response => {
+		// implicit = user clicked a tracked link/button that triggered navigation
+		const isImplicitNavigation = Date.now() - lastUserInteractionTime < 250;
+
+		if (isImplicitNavigation) {
+			return;
+		}
+
 		const path = response.path.endsWith('/') ? response.path.substr(0, response.path.length - 1) : response.path;  // Removes trailing slash
 		const predicate = valueToMatch => value => _.isRegExp(value) ? value.test(valueToMatch) : value === valueToMatch;
 		const page = _.findKey(pages, predicate(path)) || _.findKey(pages, predicate(response.url)) || response.url;
@@ -462,6 +470,7 @@ ${stepsText}
 			currentInput.element = $input.attr(attrName);
 			currentInput.value = $input.val();
 			inputs.add(currentInput.element);
+			lastUserInteractionTime = Date.now();
 		});
 
 		$(document).on('blur', `[${attrName}]:input`, function() {
@@ -477,6 +486,7 @@ ${stepsText}
 
 			if (currentInput && inputs.has(currentInput.element) && isActive && isRecording) {
 				addStep('actions.set', { element: currentInput.element, string: currentInput.value });
+				lastUserInteractionTime = Date.now();
 			}
 			currentInput = null;
 		});
@@ -491,6 +501,7 @@ ${stepsText}
 
 			if (isActive && isRecording) {
 				addStep('actions.set', { element, string: value });
+				lastUserInteractionTime = Date.now();
 			}
 		});
 
@@ -504,6 +515,7 @@ ${stepsText}
 
 			if (isActive && isRecording) {
 				addStep('actions.set', { element, string: value });
+				lastUserInteractionTime = Date.now();
 			}
 		});
 
@@ -517,6 +529,7 @@ ${stepsText}
 
 			if (isActive && isRecording) {
 				addStep('actions.set', { element, string: value });
+				lastUserInteractionTime = Date.now();
 			}
 		});
 
@@ -542,6 +555,7 @@ ${stepsText}
 
 			if (isActive && isRecording) {
 				addStep('actions.click', { element });
+				lastUserInteractionTime = Date.now();
 			}
 		});
 	}
