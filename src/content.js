@@ -17,7 +17,6 @@ $(document).ready(function() {
 	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('vendor/fonts.css'));
 	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('vendor/icons.css'));
 	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('src/content.css'));
-    Boundary.loadBoxJS('#cypress-scenario-builder', chrome.extension.getURL('src/box.js'));
 
 	const $elementLabel = $('<div />')
 		.addClass('--cypress-scenario-builder-element-label')
