@@ -7,6 +7,8 @@ $(document).ready(function() {
 	var steps = new Steps(stepTemplates);
 	var isElemPickerActive = false;
 	var isCollapsed = false;
+	var featureName = 'Example';
+	var scenarioName = 'Example';
 
 	const $iframeBody = Boundary.createBox('cypress-scenario-builder');
 	const $iframe = $('#cypress-scenario-builder');
@@ -171,6 +173,11 @@ $(document).ready(function() {
 		.html('<i class="icon icon-copy"></i> Copy')
 		.appendTo($controls);
 
+	const $download = $('<button type="button" />')
+		.addClass('btn download')
+		.html('<i class="icon icon-download"></i> Download')
+		.appendTo($controls);
+
 	const $clear = $('<button type="button" />')
 		.addClass('btn clear')
 		.html('<i class="icon icon-trashcan"></i> Clear')
@@ -190,6 +197,30 @@ $(document).ready(function() {
 		setTimeout(() => {
 			$copy.html('<i class="icon icon-copy"></i> Copy');
 		}, 2000);
+	});
+
+	$download.on('click', () => {
+		featureName = window.prompt('Enter a title for the feature:', featureName);
+		scenarioName = window.prompt('Enter a title for the scenario:', scenarioName);
+
+		const filename = _.kebabCase(featureName) + '.feature';
+		const stepsText = getCopyableSteps(steps.get());
+		const content = `Feature: ${featureName}
+===
+
+Scenario: ${scenarioName}
+---
+${stepsText}
+`;
+		const blob = new Blob([content], { type: 'text/plain;charset=UTF-8' });
+		const blobUrl = URL.createObjectURL(blob);
+
+		send('download', {
+			url: blobUrl,
+			filename: filename,
+			saveAs: true,
+			conflictAction: 'overwrite',
+		});
 	});
 
 	$clear.on('click', () => {

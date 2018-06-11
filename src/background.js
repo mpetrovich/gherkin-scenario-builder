@@ -30,6 +30,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		stepsByTab[sender.tab.id] = request.steps;
 		response = { steps: stepsByTab[sender.tab.id] };
 	}
+	else if (request.action === 'download') {
+		chrome.downloads.download({
+			url: request.url,
+			filename: request.filename,
+			saveAs: request.saveAs,
+			conflictAction: request.conflictAction,
+		});
+		response = {};
+	}
 	else {
 		response = {};
 	}
