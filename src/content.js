@@ -1,5 +1,6 @@
 $(document).ready(function() {
 	const attrName = 'test-el';
+	const attrValueName = 'test-val';
 
 	var isFirstTime = true;
 	var isActive = false;
@@ -511,7 +512,7 @@ ${stepsText}
 
 		$(document).on('change', `[${attrName}]:checkbox`, function() {
 			var element = $(this).attr(attrName);
-			var value = $(this).attr('test-val') || ($(this).is(':checked') ? 'checked' : 'unchecked');
+			var value = $(this).attr(attrValueName) || ($(this).is(':checked') ? 'checked' : 'unchecked');
 
 			if (isActive && isRecording) {
 				addStep('actions.set', { element, string: value });
@@ -525,7 +526,7 @@ ${stepsText}
 
 		$(document).on('change', `[${attrName}]:radio`, function() {
 			var element = $(this).attr(attrName);
-			var value = $(this).filter(':checked').val();
+			var value = $(this).attr(attrValueName) || $(this).filter(':checked').val();
 
 			if (isActive && isRecording) {
 				addStep('actions.set', { element, string: value });
