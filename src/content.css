@@ -176,7 +176,7 @@ body.-picking-element .step.-picking-element {
 }
 
 .pick-string {
-	width: 10em;
+	width: 11em;
 	background: transparent;
 	border: 1px solid hsla(0, 0%, 50%, 0.5);
 }
@@ -235,7 +235,7 @@ body.-picking-element .step.-picking-element {
 .btn:focus {
 	height: 2.5em;
 	margin: 0;
-	padding: 0.3em 1.2em 0.4em;
+	padding: 0.4em 1.2em;
 	font-family: inherit;
 	font-weight: bold;
 	font-size: 0.8em;
@@ -266,14 +266,14 @@ body.-picking-element .step.-picking-element {
 
 .icon-media-record {
 	position: relative;
-	top: 0.1em;
+	top: 0.15em;
 	font-size: 1.2em;
 }
 
 .btn.record {
 	display: block;
 	float: left;
-	padding: 0.3em 0.8em 0.4em;
+	padding: 0.4em 0.8em;
 	padding-right: 1em;
 	background: hsla(0, 100%, 60%, 0.5);
 	border-bottom-color: hsla(0, 50%, 20%, 0.5);
