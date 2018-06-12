@@ -14,15 +14,15 @@ body {
 	font-size: 1.1em;
 	font-weight: bold;
 	text-transform: uppercase;
-	background: rgb(200, 200, 200);
+	background: hsl(120, 0%, 80%);
 	border: none;
+	transition: 0.5s background;
 }
 
 .toggle:focus {
 	outline: none;
 }
 
-.toggle.-loading,
 .toggle.-active {
-	background: rgb(0, 200, 0);
+	background: hsl(120, 60%, 60%);
 }
