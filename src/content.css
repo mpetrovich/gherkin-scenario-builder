@@ -45,7 +45,7 @@ body {
 .steps {
 	display: block;
 	width: 100%;
-	max-height: 229px;
+	max-height: 300px;
 	overflow: auto;
 	overscroll-behavior-y: contain;
 	margin: 5px 0 0;
