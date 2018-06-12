@@ -553,7 +553,15 @@ ${stepsText}
 
 			var element = $(this).attr(attrName);
 
-			if (isActive && isRecording) {
+			if (!isActive || !isRecording) {
+				return;
+			}
+
+			if ($(this).is('input[type="file"')) {
+				addStep('actions.set', { element, string: 'sample.pdf' });
+				lastUserInteractionTime = Date.now();
+			}
+			else {
 				addStep('actions.click', { element });
 				lastUserInteractionTime = Date.now();
 			}
