@@ -460,6 +460,7 @@ ${stepsText}
 				!$(this).is('input[type="email"]') &&
 				!$(this).is('input[type="password"]') &&
 				!$(this).is('input[type="date"]') &&
+				!$(this).is('input[type="number"]') &&
 				!$(this).is('textarea')
 			) {
 				// Ignores non-textual inputs
@@ -479,6 +480,7 @@ ${stepsText}
 				!$(this).is('input[type="email"]') &&
 				!$(this).is('input[type="password"]') &&
 				!$(this).is('input[type="date"]') &&
+				!$(this).is('input[type="number"]') &&
 				!$(this).is('textarea')
 			) {
 				// Ignores non-textual inputs
@@ -543,6 +545,7 @@ ${stepsText}
 				$(this).is('input[type="email"') ||
 				$(this).is('input[type="password"') ||
 				$(this).is('input[type="date"') ||
+				$(this).is('input[type="number"') ||
 				$(this).is('input[type="checkbox"') ||
 				$(this).is('input[type="radio"') ||
 				$(this).is('textarea') ||
