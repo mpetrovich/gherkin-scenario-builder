@@ -18,9 +18,16 @@ class Steps {
 		this._setPrefixes();
 	}
 
+	replace(id, step) {
+		const index = _.findIndex(this.steps, ['id', id]);
+		this.steps.splice(index, 1, step);
+		this._setPrefixes();
+	}
+
 	add(type, params = {}) {
 		const template = _.get(this.stepTemplates, type);
-		this.steps.push({ id: Steps.stepId++, type, params, template });
+		const id = _.uniqueId(_.random(1, 1000));
+		this.steps.push({ id, type, params, template });
 		this._setPrefixes();
 	}
 
@@ -50,5 +57,3 @@ class Steps {
 		}
 	}
 }
-
-Steps.stepId = 1;

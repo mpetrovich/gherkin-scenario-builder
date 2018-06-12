@@ -47,7 +47,7 @@ $(document).ready(function() {
 
 	$container.on('click', '.js-pick-element', function pickElement() {
 		const $pickElemButton = $(this);
-		const stepId = $pickElemButton.data('stepId');
+		const stepId = $pickElemButton.attr('data-step-id');
 
 		const setClasses = () => {
 			$(document).find('body').toggleClass('--cypress-scenario-builder-show-elements', isElemPickerActive);
@@ -59,8 +59,13 @@ $(document).ready(function() {
 		const hideElementLabel = () => $elementLabel.css({ display: 'none' });
 
 		const clickEventListener = function(event) {
-			let elemName = $(this).attr(attrName);
-			let step = steps.find(stepId);
+			const elemName = $(this).attr(attrName);
+			const step = steps.find(stepId);
+
+			if (!step) {
+				console.error(`No step found for step ID = ${stepId}`);
+				return;
+			}
 
 			isElemPickerActive = false;
 			setClasses();
@@ -69,6 +74,7 @@ $(document).ready(function() {
 			hideElementLabel();
 
 			_.set(step, 'params.element', elemName);
+			steps.replace(stepId, step);
 			onStepsUpdated();
 
 			event.preventDefault();
@@ -114,12 +120,13 @@ $(document).ready(function() {
 
 	$container.on('change', '.pick-string, .pick-number', function() {
 		const $input = $(this);
-		const stepId = $input.data('stepId');
+		const stepId = $input.attr('data-step-id');
 		const step = steps.find(stepId);
 		const paramName = $input.data('paramName');
 
 		if (step) {
 			_.set(step, `params.${paramName}`, $input.val());
+			steps.replace(stepId, step);
 			onStepsUpdated();
 		}
 		else {
