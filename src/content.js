@@ -501,7 +501,7 @@ ${stepsText}
 
 		var currentInput = null;
 
-		$(document).on('keyup', `[${attrName}]:input`, function() {
+		$(document).on('keyup', `[${attrName}]:input, [${attrName}] :input`, function() {
 			if (!$(this).is('input[type="text"]') &&
 				!$(this).is('input[type="email"]') &&
 				!$(this).is('input[type="password"]') &&
@@ -515,13 +515,13 @@ ${stepsText}
 
 			var $input = $(this);
 			currentInput = {};
-			currentInput.element = $input.attr(attrName);
+			currentInput.element = $input.closest(`[${attrName}]`).attr(attrName);
 			currentInput.value = $input.val();
 			inputs.add(currentInput.element);
 			lastUserInteractionTime = Date.now();
 		});
 
-		$(document).on('blur', `[${attrName}]:input`, function() {
+		$(document).on('blur', `[${attrName}]:input, [${attrName}] :input`, function() {
 			if (!$(this).is('input[type="text"]') &&
 				!$(this).is('input[type="email"]') &&
 				!$(this).is('input[type="password"]') &&
@@ -544,8 +544,8 @@ ${stepsText}
 			Select
 		 */
 
-		$(document).on('change', `select[${attrName}]`, function() {
-			var element = $(this).attr(attrName);
+		$(document).on('change', `select[${attrName}], [${attrName}] select`, function() {
+			var element = $(this).closest(`[${attrName}]`).attr(attrName);
 			var value = $(this).find('option:selected').text();
 
 			if (isActive && isRecording) {
@@ -558,8 +558,8 @@ ${stepsText}
 			Checkbox
 		 */
 
-		$(document).on('change', `[${attrName}]:checkbox`, function() {
-			var element = $(this).attr(attrName);
+		$(document).on('change', `[${attrName}]:checkbox, [${attrName}] :checkbox`, function() {
+			var element = $(this).closest(`[${attrName}]`).attr(attrName);
 			var value = $(this).attr(attrValueName) || ($(this).is(':checked') ? 'checked' : 'unchecked');
 
 			if (isActive && isRecording) {
@@ -572,8 +572,8 @@ ${stepsText}
 			Radio
 		 */
 
-		$(document).on('change', `[${attrName}]:radio`, function() {
-			var element = $(this).attr(attrName);
+		$(document).on('change', `[${attrName}]:radio, [${attrName}] :radio`, function() {
+			var element = $(this).closest(`[${attrName}]`).attr(attrName);
 			var value = $(this).attr(attrValueName) || $(this).filter(':checked').val();
 
 			if (isActive && isRecording) {
@@ -587,6 +587,8 @@ ${stepsText}
 		 */
 
 		$(document).on('click', `[${attrName}]`, function() {
+			const containsInput = $(this).find(':input').not('input[type="submit"]').length > 0;
+
 			if ($(this).is('input[type="text"') ||
 				$(this).is('input[type="email"') ||
 				$(this).is('input[type="password"') ||
@@ -595,7 +597,8 @@ ${stepsText}
 				$(this).is('input[type="checkbox"') ||
 				$(this).is('input[type="radio"') ||
 				$(this).is('textarea') ||
-				$(this).is('select')
+				$(this).is('select') ||
+				containsInput
 			) {
 				// Click steps should not be generated for non-submit inputs
 				return;

@@ -176,7 +176,8 @@ body.-picking-element .step.-picking-element {
 }
 
 .pick-string {
-	width: 10em;
+	min-width: 10em;
+	width: 15em;
 	background: transparent;
 	border: 1px solid hsla(0, 0%, 50%, 0.5);
 }
