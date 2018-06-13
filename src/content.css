@@ -155,6 +155,7 @@ body.-picking-element .step.-picking-element {
 
 .pick-element {
 	cursor: pointer;
+	min-width: 10em;
 	max-width: 15em;
 	overflow: hidden;
 	text-overflow: ellipsis;
