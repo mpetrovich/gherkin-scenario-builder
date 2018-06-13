@@ -134,6 +134,24 @@ $(document).ready(function() {
 		}
 	});
 
+	$container.on('change', '.pick-string-preset', function() {
+		const $select = $(this);
+		const $input = $select.siblings('.pick-string');
+
+		$input.val($input.val() + $select.val());
+		$select.val('');
+		$input.change();
+	});
+
+	$container.on('change', '.pick-page', function() {
+		const $select = $(this);
+		const $input = $select.siblings('.pick-string');
+
+		$input.val($select.val());
+		$select.val('');
+		$input.change();
+	});
+
 	$container.on('click', '.js-remove-step', function() {
 		const stepIndex = $(this).closest('[data-step-index]').data('stepIndex');
 		steps.remove(stepIndex);
@@ -149,7 +167,7 @@ $(document).ready(function() {
 		let group = `<optgroup label="${_.startCase(category)}">${options}</optgroup>`;
 		return group;
 	});
-	options.unshift('<option disabled selected>Add a step...</option>');
+	options.unshift('<option value="" disabled selected>Add a step...</option>');
 
 	const $addStep = $(`<select name="add_step" class="add-step">${options.join('')}</select>`)
 		.appendTo($stepsWrapper);
@@ -157,7 +175,7 @@ $(document).ready(function() {
 	$addStep.on('change', () => {
 		const type = $addStep.find('option:selected').val();
 		addStep(type);
-		$addStep.find('option[disabled]').first().prop('selected', true);
+		$addStep.val('');
 	});
 
 	/*
@@ -256,7 +274,7 @@ ${stepsText}
 		const path = response.path.endsWith('/') ? response.path.substr(0, response.path.length - 1) : response.path;  // Removes trailing slash
 		const predicate = valueToMatch => value => _.isRegExp(value) ? value.test(valueToMatch) : value === valueToMatch;
 		const page = _.findKey(pages, predicate(path)) || _.findKey(pages, predicate(response.url)) || response.url;
-		addStep('actions.navigate', { string: page });
+		addStep('actions.navigate', { page });
 	});
 
 	send('getActive', {}, response => {
@@ -402,12 +420,33 @@ ${stepsText}
 	function getFormattedSteps(steps) {
 		return _.map(steps, (step, index) => {
 
-			text = step.template.replace(/({string}|{number}|{element})/g, (match, param) => {
+			text = step.template.replace(/({string}|{page}|{number}|{element})/g, (match, param) => {
 				if (param === '{number}') {
 					return `<input type="number" class="pick-number" data-step-id="${step.id}" data-param-name="number" value="${step.params.number}">`;
 				}
 				else if (param === '{string}') {
-					return `<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="string" value="${step.params.string || ''}">`;
+					const optgroups = _.map(stringPresets, (presets, category) => {
+						const options = _.map(presets, preset => `<option value="${_.escape(preset)}">${_.escape(preset)}</option>`);
+						return `<optgroup label="${_.startCase(category)}">${options}</optgroup>`;
+					});
+
+					return `
+						<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="string" value="${step.params.string || ''}">
+						<select class="pick-string-preset">
+							<option value="" disabled selected>⚙ Presets:</option>
+							${optgroups}
+						</select>
+					`;
+				}
+				else if (param === '{page}') {
+					const options = _.map(pages, (path, page) => `<option value="${_.escape(page)}">${_.escape(page)}</option>`);
+					return `
+						<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="page" value="${step.params.page || ''}">
+						<select class="pick-page">
+							<option value="" disabled selected>📄 Pages:</option>
+							${options}
+						</select>
+					`;
 				}
 				else if (param === '{element}') {
 					let elemName = step.params.element || '<i class="icon icon-mouse-pointer"></i> Choose element';

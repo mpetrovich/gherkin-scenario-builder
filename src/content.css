@@ -64,11 +64,10 @@ body {
 	height: 2.2em;
 	margin: 3px 0;
 	padding: 2px 15px;
-	padding-right: 40px;
+	padding-right: 45px;
 	line-height: 2.2em;
 	white-space: nowrap;
 	cursor: -webkit-grab;
-	background: #fff;
 }
 
 .step:active {
@@ -77,6 +76,7 @@ body {
 
 .step.ui-sortable-helper {
 	box-shadow: 0 5px 40px rgba(0, 0, 0, 0.2);
+	background: #fff;
 }
 
 .step::before {
@@ -176,7 +176,7 @@ body.-picking-element .step.-picking-element {
 }
 
 .pick-string {
-	width: 11em;
+	width: 10em;
 	background: transparent;
 	border: 1px solid hsla(0, 0%, 50%, 0.5);
 }
@@ -185,6 +185,13 @@ body.-picking-element .step.-picking-element {
 	width: 4em;
 	background: transparent;
 	border: 1px solid hsla(0, 0%, 50%, 0.5);
+}
+
+.pick-string-preset,
+.pick-page {
+	width: 40px;
+	height: 100%;
+	font-size: 1em;
 }
 
 /*

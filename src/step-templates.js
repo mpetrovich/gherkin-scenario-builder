@@ -4,13 +4,13 @@ const stepTemplates = {
 		loggedIn: 'I am logged in as {string}',
 	},
 	actions: {
-		navigate: 'I navigate to {string}',
+		navigate: 'I navigate to {page}',
 		click: 'I click {element}',
 		set: 'I set {element} to {string}',
 	},
 	assertions: {
-		navigate: 'I will navigate to {string}',
-		notNavigate: 'I will not navigate to {string}',
+		navigate: 'I will navigate to {page}',
+		notNavigate: 'I will not navigate to {page}',
 		see: 'I will see {element}',
 		notSee: 'I will not see {element}',
 		seeCount: 'I will see {number} instances of {element}',
