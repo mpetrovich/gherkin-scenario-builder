@@ -494,15 +494,14 @@ ${stepsText}
 	}
 
 	function bindUserEvents() {
-		const inputs = new Set();
 
 		/*
 			Text input
 		 */
 
-		var currentInput = null;
+		$(document).on('change', `[${attrName}]:input, [${attrName}] :input`, function() {
 
-		$(document).on('keyup', `[${attrName}]:input, [${attrName}] :input`, function() {
+			// Ignores non-textual inputs
 			if (!$(this).is('input[type="text"]') &&
 				!$(this).is('input[type="email"]') &&
 				!$(this).is('input[type="password"]') &&
@@ -510,35 +509,19 @@ ${stepsText}
 				!$(this).is('input[type="number"]') &&
 				!$(this).is('textarea')
 			) {
-				// Ignores non-textual inputs
 				return;
 			}
 
-			var $input = $(this);
-			currentInput = {};
-			currentInput.element = $input.closest(`[${attrName}]`).attr(attrName);
-			currentInput.value = $input.val();
-			inputs.add(currentInput.element);
+			if (!isActive || !isRecording) {
+				return;
+			}
+
+			const $input = $(this);
+			const element = $input.closest(`[${attrName}]`).attr(attrName);
+			const value = $input.val();
+
+			addStep('actions.set', { element, string: value });
 			lastUserInteractionTime = Date.now();
-		});
-
-		$(document).on('blur', `[${attrName}]:input, [${attrName}] :input`, function() {
-			if (!$(this).is('input[type="text"]') &&
-				!$(this).is('input[type="email"]') &&
-				!$(this).is('input[type="password"]') &&
-				!$(this).is('input[type="date"]') &&
-				!$(this).is('input[type="number"]') &&
-				!$(this).is('textarea')
-			) {
-				// Ignores non-textual inputs
-				return;
-			}
-
-			if (currentInput && inputs.has(currentInput.element) && isActive && isRecording) {
-				addStep('actions.set', { element: currentInput.element, string: currentInput.value });
-				lastUserInteractionTime = Date.now();
-			}
-			currentInput = null;
 		});
 
 		/*
