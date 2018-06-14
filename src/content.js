@@ -235,6 +235,7 @@ $(document).ready(function() {
 		const content = `Feature: ${featureName}
 ===
 
+
 Scenario: ${scenarioName}
 ---
 ${stepsText}
