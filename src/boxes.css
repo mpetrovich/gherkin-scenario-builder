@@ -16,7 +16,7 @@
 }
 
 /* Add this via JS */
-.--cypress-scenario-builder-show-elements [test-el] {
+.--cypress-scenario-builder-show-elements [data-test] {
 	outline: 3px solid rgba(255, 0, 170, 0.75);
 	cursor: pointer;
 }

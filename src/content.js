@@ -1,6 +1,6 @@
 $(document).ready(function() {
-	const attrName = 'test-el';
-	const attrValueName = 'test-val';
+	const attrName = 'data-test';
+	const attrValueName = 'data-test-val';
 
 	var isFirstTime = true;
 	var isActive = false;
