@@ -34,6 +34,7 @@
         "vendor/iframeResizer.min.js",
         "src/step-templates.js",
         "src/pages.js",
+        "src/users.js",
         "src/string-presets.js",
         "src/steps.js",
         "src/content.js"

@@ -190,7 +190,8 @@ body.-picking-element .step.-picking-element {
 }
 
 .pick-string-preset,
-.pick-page {
+.pick-page,
+.pick-user {
 	width: 40px;
 	height: 100%;
 	font-size: 1em;

@@ -152,6 +152,15 @@ $(document).ready(function() {
 		$input.change();
 	});
 
+	$container.on('change', '.pick-user', function() {
+		const $select = $(this);
+		const $input = $select.siblings('.pick-string');
+
+		$input.val($select.val());
+		$select.val('');
+		$input.change();
+	});
+
 	$container.on('click', '.js-remove-step', function() {
 		const stepIndex = $(this).closest('[data-step-index]').data('stepIndex');
 		steps.remove(stepIndex);
@@ -421,7 +430,7 @@ ${stepsText}
 	function getFormattedSteps(steps) {
 		return _.map(steps, (step, index) => {
 
-			text = step.template.replace(/({string}|{page}|{number}|{element})/g, (match, param) => {
+			text = step.template.replace(/({string}|{page}|{user}|{number}|{element})/g, (match, param) => {
 				if (param === '{number}') {
 					return `<input type="number" class="pick-number" data-step-id="${step.id}" data-param-name="number" value="${step.params.number}">`;
 				}
@@ -445,6 +454,16 @@ ${stepsText}
 						<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="page" value="${step.params.page || ''}">
 						<select class="pick-page">
 							<option value="" disabled selected>📄 Pages:</option>
+							${options}
+						</select>
+					`;
+				}
+				else if (param === '{user}') {
+					const options = _.map(users, (info, user) => `<option value="${_.escape(user)}">${_.escape(user)}</option>`);
+					return `
+						<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="user" value="${step.params.user || ''}">
+						<select class="pick-user">
+							<option value="" disabled selected>👤 Users:</option>
 							${options}
 						</select>
 					`;
