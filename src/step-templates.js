@@ -19,7 +19,7 @@ const stepTemplates = {
 		isNotOnPage: 'I will not navigate to {page}',
 		isVisible: 'I will see {element}',
 		isNotVisible: 'I will not see {element}',
-		hasCount: 'I will see {number} instances of {element}',
+		hasCount: 'I will see {int} instances of {element}',
 		hasText: '{element} will be {string}',
 		doesNotHaveText: '{element} will not be {string}',
 		containsText: '{element} will contain {string}',

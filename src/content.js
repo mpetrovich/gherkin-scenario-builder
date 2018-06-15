@@ -432,9 +432,9 @@ ${stepsText}
 	function getFormattedSteps(steps) {
 		return _.map(steps, (step, index) => {
 
-			text = step.template.replace(/({string}|{page}|{user}|{number}|{element})/g, (match, param) => {
-				if (param === '{number}') {
-					return `<input type="number" class="pick-number" data-step-id="${step.id}" data-param-name="number" value="${step.params.number}">`;
+			text = step.template.replace(/({string}|{page}|{user}|{int}|{float}|{element})/g, (match, param) => {
+				if (param === '{int}' || param === '{float}') {
+					return `<input type="number" class="pick-number" data-step-id="${step.id}" data-param-name="${param}" value="${step.params[param]}">`;
 				}
 				else if (param === '{string}') {
 					const optgroups = _.map(stringPresets, (presets, category) => {
