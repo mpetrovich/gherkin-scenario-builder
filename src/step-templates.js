@@ -5,6 +5,8 @@ const stepTemplates = {
 		loggedIn: 'I am logged in as {user}',
 	},
 	actions: {
+		logout: 'I log out',
+		login: 'I log in as {user}',
 		navigate: 'I navigate to {page}',
 		click: 'I click {element}',
 		set: 'I set {element} to {string}',
