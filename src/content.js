@@ -1,6 +1,7 @@
 $(document).ready(function() {
 	const attrName = 'data-test';
 	const attrValueName = 'data-test-val';
+	const implicitNavigationThreshold = 500;
 
 	var isFirstTime = true;
 	var isActive = false;
@@ -90,6 +91,7 @@ $(document).ready(function() {
 				.css({
 					display: 'block',
 					position: 'fixed',
+					zIndex: 999999,
 					left: rect.left,
 					top: rect.bottom,
 				});
@@ -275,7 +277,7 @@ ${stepsText}
 
 	listen('navigate', response => {
 		// implicit = user clicked a tracked link/button that triggered navigation
-		const isImplicitNavigation = Date.now() - lastUserInteractionTime < 250;
+		const isImplicitNavigation = Date.now() - lastUserInteractionTime < implicitNavigationThreshold;
 
 		if (isImplicitNavigation) {
 			return;
