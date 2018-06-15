@@ -11,9 +11,9 @@ const stepTemplates = {
 		click: 'I click {element}',
 		set: 'I set {element} to {string}',
 		waitUntilHidden: 'I wait for {element} to be hidden',
+		wait: 'I wait {float} seconds',
 		pause: 'I pause',
 		debug: 'I debug',
-		wait: 'I wait {float} seconds',
 	},
 	assertions: {
 		isOnPage: 'I will navigate to {page}',
