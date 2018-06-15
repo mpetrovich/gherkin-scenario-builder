@@ -5,6 +5,7 @@ const stringPresets = {
 		'<random full name>',
 		'<random phone>',
 		'<random email>',
+		'<random password>',
 		'<random street address>',
 		'<random city>',
 		'<random state>',
