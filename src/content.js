@@ -517,17 +517,18 @@ ${stepsText}
 	function bindUserEvents() {
 
 		/*
-			Text input
+			Text/file input
 		 */
 
 		$(document).on('change', `[${attrName}]:input, [${attrName}] :input`, function() {
 
-			// Ignores non-textual inputs
+			// Ignores non-textual/file inputs
 			if (!$(this).is('input[type="text"]') &&
 				!$(this).is('input[type="email"]') &&
 				!$(this).is('input[type="password"]') &&
 				!$(this).is('input[type="date"]') &&
 				!$(this).is('input[type="number"]') &&
+				!$(this).is('input[type="file"]') &&
 				!$(this).is('textarea')
 			) {
 				return;
@@ -539,7 +540,11 @@ ${stepsText}
 
 			const $input = $(this);
 			const element = $input.closest(`[${attrName}]`).attr(attrName);
-			const value = $input.val();
+			let value = $input.val();
+
+			if ($input.is('[type="file"]')) {
+				value = value.replace('C:\\fakepath\\', '');
+			}
 
 			addStep('actions.set', { element, string: value });
 			lastUserInteractionTime = Date.now();
@@ -601,6 +606,7 @@ ${stepsText}
 				$(this).is('input[type="number"') ||
 				$(this).is('input[type="checkbox"') ||
 				$(this).is('input[type="radio"') ||
+				$(this).is('input[type="file"') ||
 				$(this).is('textarea') ||
 				$(this).is('select') ||
 				containsInput
@@ -609,20 +615,13 @@ ${stepsText}
 				return;
 			}
 
-			var element = $(this).attr(attrName);
-
 			if (!isActive || !isRecording) {
 				return;
 			}
 
-			if ($(this).is('input[type="file"')) {
-				addStep('actions.set', { element, string: 'sample.pdf' });
-				lastUserInteractionTime = Date.now();
-			}
-			else {
-				addStep('actions.click', { element });
-				lastUserInteractionTime = Date.now();
-			}
+			var element = $(this).attr(attrName);
+			addStep('actions.click', { element });
+			lastUserInteractionTime = Date.now();
 		});
 	}
 
