@@ -61,6 +61,11 @@ chrome.webNavigation.onBeforeNavigate.addListener(details => {
 	}
 });
 
+chrome.browserAction.onClicked.addListener(tab => {
+	isActive = !isActive;
+	notifyPage({ action: 'setActive', isActive }, tab.id);
+});
+
 function notifyPage(data, tabId = null) {
 	console.log('dispatch', data);
 	chrome.tabs.query({ active: true, currentWindow: true }, tabs => {

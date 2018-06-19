@@ -18,8 +18,7 @@
   },
   "browser_action": {
     "default_icon": "icons/icon19.png",
-    "default_title": "Cypress Scenario Builder",
-    "default_popup": "src/popup.html"
+    "default_title": "Cypress Scenario Builder"
   },
   "content_scripts": [
     {
