@@ -1,0 +1,17 @@
+html {
+	min-width: 400px;
+}
+
+.save-icon {
+	display: inline-block;
+	visibility: hidden;
+	color: green;
+}
+input.-saved + .save-icon {
+	visibility: visible;
+}
+
+textarea {
+	width: 100%;
+	min-height: 300px;
+}

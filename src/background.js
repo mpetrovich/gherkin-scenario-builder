@@ -2,33 +2,59 @@ var isActive = false;
 var isRecordingByTab = {};
 var stepsByTab = {};
 
+const defaultOptions = {
+	element_attr: 'data-test',
+	value_attr: 'data-test-value',
+	force_attr: 'data-test-force',
+};
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	console.log('request', request);
+	const respond = result => {
+		console.log('bg.response', result);
+		sendResponse(result || {});
+	};
 
-	let response;
+	console.log('bg.request', request);
 
-	if (request.action === 'getActive') {
-		response = { isActive };
+	if (request.action === 'getOptions') {
+		chrome.storage.sync.get(null, savedOptions => {
+			const options = _.defaults({}, savedOptions, defaultOptions);
+			console.log('bg.getOptions', options);
+			respond(options);
+		});
+	}
+	else if (request.action === 'setOptions') {
+		const changedOptions = _.omit(request, 'action');
+		console.log('bg.setOptions', changedOptions);
+		chrome.storage.sync.set(changedOptions, () => {
+			chrome.storage.sync.get(null, options => {
+				respond(options);
+				notifyAll({ action: request.action, ...options });
+			});
+		});
+	}
+	else if (request.action === 'getActive') {
+		respond({ isActive });
 	}
 	else if (request.action === 'setActive') {
 		isActive = request.isActive;
-		response = { isActive };
-		notifyPage({ action: request.action, ...response });
+		respond({ isActive });
+		notifyAll({ action: request.action, isActive });
 	}
 	else if (request.action === 'getRecording') {
-		response = { isRecording: isRecordingByTab[sender.tab.id] || false };
+		respond({ isRecording: isRecordingByTab[sender.tab.id] || false });
 	}
 	else if (request.action === 'setRecording') {
 		isRecordingByTab[sender.tab.id] = request.isRecording;
-		response = { isRecording: isRecordingByTab[sender.tab.id] };
+		respond({ isRecording: isRecordingByTab[sender.tab.id] });
 	}
 	else if (request.action === 'getSteps') {
 		const steps = stepsByTab[sender.tab.id] || [];
-		response = { steps };
+		respond({ steps });
 	}
 	else if (request.action === 'setSteps') {
 		stepsByTab[sender.tab.id] = request.steps;
-		response = { steps: stepsByTab[sender.tab.id] };
+		respond({ steps: stepsByTab[sender.tab.id] });
 	}
 	else if (request.action === 'download') {
 		chrome.downloads.download({
@@ -37,15 +63,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			saveAs: request.saveAs,
 			conflictAction: request.conflictAction,
 		});
-		response = {};
+		respond();
 	}
 	else {
-		response = {};
+		respond();
 	}
 
-	sendResponse(response);
-
-	console.log('response', response);
+	return true;  // To make it async
 });
 
 chrome.webNavigation.onBeforeNavigate.addListener(details => {
@@ -57,18 +81,27 @@ chrome.webNavigation.onBeforeNavigate.addListener(details => {
 	const path = anchor.pathname;
 
 	if (isActive && isRecording && url !== 'about:blank') {
-		notifyPage({ action: 'navigate', url, path }, tabId);
+		notifyActive({ action: 'navigate', url, path }, tabId);
 	}
 });
 
 chrome.browserAction.onClicked.addListener(tab => {
 	isActive = !isActive;
-	notifyPage({ action: 'setActive', isActive }, tab.id);
+	notifyActive({ action: 'setActive', isActive }, tab.id);
 });
 
-function notifyPage(data, tabId = null) {
-	console.log('dispatch', data);
+function notifyActive(data, tabId = null) {
+	console.log('bg.notify', data);
 	chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
 		chrome.tabs.sendMessage(tabId || tabs[0].id, data);
+	});
+}
+
+function notifyAll(data) {
+	console.log('bg.notifyAll', data);
+	chrome.tabs.query({}, tabs => {
+		for (const tab of tabs) {
+			chrome.tabs.sendMessage(tab.id, data);
+		}
 	});
 }

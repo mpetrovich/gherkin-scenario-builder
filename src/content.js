@@ -1,7 +1,10 @@
 $(document).ready(function() {
-	const attrName = 'data-test';
-	const attrValueName = 'data-test-val';
+	var attrName;
+	var attrValueName;
+
 	const implicitNavigationThreshold = 500;
+	const eventNamespace = 'cypress-scenario-builder';
+	const listeners = [];
 
 	var isFirstTime = true;
 	var isActive = false;
@@ -13,8 +16,8 @@ $(document).ready(function() {
 	var scenarioName = 'Example';
 	var lastUserInteractionTime = Date.now();
 
-	const $iframeBody = Boundary.createBox('cypress-scenario-builder');
-	const $iframe = $('#cypress-scenario-builder');
+	var $iframeBody = Boundary.createBox('cypress-scenario-builder');
+	var $iframe = $('#cypress-scenario-builder');
 
 	$iframe.addClass('--cypress-scenario-builder hidden');
 
@@ -23,26 +26,26 @@ $(document).ready(function() {
 	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('vendor/icons.css'));
 	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('src/content.css'));
 
-	const $elementLabel = $('<div />')
+	var $elementLabel = $('<div />')
 		.addClass('--cypress-scenario-builder-element-label')
 		.appendTo(document.body);
 
-	const $container = $('<div />')
+	var $container = $('<div />')
 		.addClass('container')
 		.appendTo($iframeBody);
 
-	const $stepsWrapper = $('<div />')
+	var $stepsWrapper = $('<div />')
 		.addClass('steps-wrapper')
 		.appendTo($container);
 
-	const $stepsText = $('<textarea />')
+	var $stepsText = $('<textarea />')
 		.addClass('steps-text')
 		.prop('readonly', true)
 		.appendTo($stepsWrapper);
 
 	$stepsWrapper.append('<h2 class="steps-heading">Scenario</h2>');
 
-	const $steps = $('<div />')
+	var $steps = $('<div />')
 		.addClass('steps hidden')
 		.appendTo($stepsWrapper);
 
@@ -101,6 +104,7 @@ $(document).ready(function() {
 
 		const setListeners = () => {
 			// Hijacks clicks on all possible elements
+			// @todo Bug: When attrName changes, old event listeners are never removed
 			$(document).find(`[${attrName}]`).each(function() {
 				if (isElemPickerActive) {
 					this.addEventListener('click', clickEventListener, { capture: true });
@@ -193,30 +197,30 @@ $(document).ready(function() {
 		Controls
 	 */
 
-	const $controls = $('<div />')
+	var $controls = $('<div />')
 		.addClass('controls clearfix')
 		.appendTo($container);
 
-	const $collapseToggle = $('<button type="button" />')
+	var $collapseToggle = $('<button type="button" />')
 		.html('<i class="icon icon-collapse"></i><i class="icon icon-expand"></i>')
 		.addClass('collapse-toggle')
 		.appendTo($container);
 
-	const $record = $('<button type="button" />')
+	var $record = $('<button type="button" />')
 		.addClass('btn record')
 		.appendTo($controls);
 
-	const $copy = $('<button type="button" />')
+	var $copy = $('<button type="button" />')
 		.addClass('btn copy')
 		.html('<i class="icon icon-copy"></i> Copy')
 		.appendTo($controls);
 
-	const $download = $('<button type="button" />')
+	var $download = $('<button type="button" />')
 		.addClass('btn download')
 		.html('<i class="icon icon-download"></i> Download')
 		.appendTo($controls);
 
-	const $clear = $('<button type="button" />')
+	var $clear = $('<button type="button" />')
 		.addClass('btn clear')
 		.html('<i class="icon icon-trashcan"></i> Clear')
 		.appendTo($controls);
@@ -267,8 +271,7 @@ ${stepsText}
 	});
 
 	listen('setActive', response => {
-		isActive = response.isActive;
-		showPane(isActive);
+		setActive(response.isActive);
 	});
 
 	listen('setRecording', response => {
@@ -290,19 +293,47 @@ ${stepsText}
 	});
 
 	send('getActive', {}, response => {
-		isActive = response.isActive;
-		showPane(isActive);
+		setActive(response.isActive);
 	});
 
 	send('getRecording', {}, response => {
 		setIsRecording(response.isRecording);
 	});
 
-	init();
+	send('getOptions', {}, options => {
+		options = options || {};
+		attrName = options.element_attr || attrName;
+		attrValueName = options.value_attr || attrValueName;
+		console.log('getOptions', { attrName, attrValueName });
 
-	function init() {
+		if (isActive) {
+			updateStylesheet();
+		}
+	});
+
+	listen('setOptions', options => {
+		unbindUserEvents();
+
+		attrName = options.element_attr;
+		attrValueName = options.value_attr;
+
 		bindUserEvents();
-		reloadSteps();
+		updateStylesheet();
+	});
+
+	function setActive(newIsActive) {
+		isActive = newIsActive;
+		showPane(isActive);
+
+		if (isActive) {
+			bindUserEvents();
+			addStylesheet();
+			reloadSteps();
+		}
+		else {
+			unbindUserEvents();
+			removeStylesheet();
+		}
 	}
 
 	function showPane(isActive) {
@@ -520,7 +551,7 @@ ${stepsText}
 			Text/file input
 		 */
 
-		$(document).on('change', `[${attrName}]:input, [${attrName}] :input`, function() {
+		$(document).on(`change.${eventNamespace}`, `[${attrName}]:input, [${attrName}] :input`, function() {
 
 			// Ignores non-textual/file inputs
 			if (!$(this).is('input[type="text"]') &&
@@ -554,7 +585,7 @@ ${stepsText}
 			Select
 		 */
 
-		$(document).on('change', `select[${attrName}], [${attrName}] select`, function() {
+		$(document).on(`change.${eventNamespace}`, `select[${attrName}], [${attrName}] select`, function() {
 			var element = $(this).closest(`[${attrName}]`).attr(attrName);
 			var value = $(this).find('option:selected').text();
 
@@ -568,7 +599,7 @@ ${stepsText}
 			Checkbox
 		 */
 
-		$(document).on('change', `[${attrName}]:checkbox, [${attrName}] :checkbox`, function() {
+		$(document).on(`change.${eventNamespace}`, `[${attrName}]:checkbox, [${attrName}] :checkbox`, function() {
 			var element = $(this).closest(`[${attrName}]`).attr(attrName);
 			var value = $(this).attr(attrValueName) || ($(this).is(':checked') ? 'checked' : 'unchecked');
 
@@ -582,7 +613,7 @@ ${stepsText}
 			Radio
 		 */
 
-		$(document).on('change', `[${attrName}]:radio, [${attrName}] :radio`, function() {
+		$(document).on(`change.${eventNamespace}`, `[${attrName}]:radio, [${attrName}] :radio`, function() {
 			var element = $(this).closest(`[${attrName}]`).attr(attrName);
 			var value = $(this).attr(attrValueName) || $(this).filter(':checked').val();
 
@@ -596,7 +627,7 @@ ${stepsText}
 			Click
 		 */
 
-		$(document).on('click', `[${attrName}]`, function() {
+		$(document).on(`click.${eventNamespace}`, `[${attrName}]`, function() {
 			const containsInput = $(this).find(':input').not('input[type="submit"]').length > 0;
 
 			if ($(this).is('input[type="text"') ||
@@ -625,18 +656,44 @@ ${stepsText}
 		});
 	}
 
+	function unbindUserEvents() {
+		$(document).off(`.${eventNamespace}`);
+	}
+
+	function addStylesheet() {
+		$('head').append(`<style id="cypress-scenario-builder-styles">
+.--cypress-scenario-builder-show-elements [${attrName}] {
+	outline: 3px solid rgba(255, 0, 170, 0.75);
+	cursor: pointer;
+}
+</style>`);
+	}
+
+	function removeStylesheet() {
+		$('#cypress-scenario-builder-styles').remove();
+	}
+
+	function updateStylesheet() {
+		removeStylesheet();
+		addStylesheet();
+	}
+
 	function send(action, params, callback = () => {}) {
 		console.log('send', action, params);
 		chrome.runtime.sendMessage({ action: action, ...params }, callback);
 	}
 
 	function listen(action, callback) {
-		chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-			console.log('request', request);
-			if (request.action === action) {
-				callback(request);
-			}
-		});
+		listeners[action] = listeners[action] || [];
+		listeners[action].push(callback);
 	}
+
+	chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+		console.log('request', request);
+		for (const listener of listeners[request.action]) {
+			console.log(`listen.${request.action}`, request);
+			listener(request);
+		}
+	});
 
 });

@@ -9,12 +9,17 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "permissions": ["activeTab", "webNavigation", "downloads"],
+  "permissions": ["activeTab", "webNavigation", "downloads", "storage"],
   "background": {
     "scripts": [
-      "src/background.js"
+      "src/background.js",
+      "vendor/lodash.min.js"
     ],
     "persistent": false
+  },
+  "options_ui": {
+    "page": "src/options.html",
+    "open_in_tab": false
   },
   "browser_action": {
     "default_icon": "icons/icon19.png",
