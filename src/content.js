@@ -9,6 +9,8 @@ $(document).ready(function() {
 	var isFirstTime = true;
 	var isActive = false;
 	var isRecording = false;
+	var rawPages = '';
+	var pages = {};
 	var rawSteps = '';
 	var stepTemplates = [];
 	var steps = new Steps(stepTemplates);
@@ -315,6 +317,7 @@ ${stepsText}
 		}
 
 		setRawSteps(options.steps);
+		setRawPages(options.pages);
 
 		console.log('getOptions', options);
 	});
@@ -329,7 +332,19 @@ ${stepsText}
 		}
 
 		setRawSteps(options.steps);
+		setRawPages(options.pages);
 	});
+
+	function setRawPages(newRawPages) {
+		if (newRawPages === rawPages) {
+			// No change
+			return;
+		}
+
+		rawPages = newRawPages;
+		pages = safeEval(rawPages) || {};
+		renderSteps();
+	}
 
 	function setRawSteps(newRawSteps) {
 		if (newRawSteps === rawSteps) {
@@ -338,13 +353,13 @@ ${stepsText}
 		}
 
 		rawSteps = newRawSteps;
-		stepTemplates = saveEval(rawSteps) || {};
+		stepTemplates = safeEval(rawSteps) || {};
 		steps = new Steps(stepTemplates);
 		renderStepPicker();
-		reloadSteps();
+		renderSteps();
 	}
 
-	function saveEval(js) {
+	function safeEval(js) {
 		var value;
 
 		try {

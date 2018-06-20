@@ -25,6 +25,11 @@ $(document).on('keyup', ':input', function() {
 	send('setOptions', { [name]: value }, () => $input.addClass('-saved'));
 });
 
+$('.use-default-pages').click((event) => {
+	send('setOptions', { pages: '' }, options => $(':input[name="pages"]').val(options.pages));
+	event.preventDefault();
+});
+
 $('.use-default-steps').click((event) => {
 	send('setOptions', { steps: '' }, options => $(':input[name="steps"]').val(options.steps));
 	event.preventDefault();

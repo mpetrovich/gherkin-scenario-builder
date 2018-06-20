@@ -13,6 +13,7 @@
   "background": {
     "scripts": [
       "vendor/lodash.min.js",
+      "src/default-pages.js",
       "src/default-steps.js",
       "src/background.js"
     ],
@@ -37,8 +38,6 @@
         "vendor/lodash.min.js",
         "vendor/boundary/boundary.js",
         "vendor/iframeResizer.min.js",
-        "src/default-steps.js",
-        "src/pages.js",
         "src/users.js",
         "src/string-presets.js",
         "src/steps.js",
