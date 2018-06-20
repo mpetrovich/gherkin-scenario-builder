@@ -14,6 +14,7 @@
     "scripts": [
       "vendor/lodash.min.js",
       "src/default-pages.js",
+      "src/default-users.js",
       "src/default-steps.js",
       "src/background.js"
     ],
@@ -38,7 +39,6 @@
         "vendor/lodash.min.js",
         "vendor/boundary/boundary.js",
         "vendor/iframeResizer.min.js",
-        "src/users.js",
         "src/string-presets.js",
         "src/steps.js",
         "src/content.js"

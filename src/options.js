@@ -30,6 +30,11 @@ $('.use-default-pages').click((event) => {
 	event.preventDefault();
 });
 
+$('.use-default-users').click((event) => {
+	send('setOptions', { users: '' }, options => $(':input[name="users"]').val(options.users));
+	event.preventDefault();
+});
+
 $('.use-default-steps').click((event) => {
 	send('setOptions', { steps: '' }, options => $(':input[name="steps"]').val(options.steps));
 	event.preventDefault();

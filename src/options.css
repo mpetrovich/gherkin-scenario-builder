@@ -30,6 +30,9 @@ textarea {
 textarea[name="pages"] {
 	min-height: 200px;
 }
+textarea[name="users"] {
+	min-height: 200px;
+}
 textarea[name="steps"] {
 	min-height: 300px;
 }

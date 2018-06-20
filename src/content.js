@@ -11,6 +11,8 @@ $(document).ready(function() {
 	var isRecording = false;
 	var rawPages = '';
 	var pages = {};
+	var rawUsers = '';
+	var users = {};
 	var rawSteps = '';
 	var stepTemplates = [];
 	var steps = new Steps(stepTemplates);
@@ -318,6 +320,7 @@ ${stepsText}
 
 		setRawSteps(options.steps);
 		setRawPages(options.pages);
+		setRawUsers(options.users);
 
 		console.log('getOptions', options);
 	});
@@ -333,6 +336,7 @@ ${stepsText}
 
 		setRawSteps(options.steps);
 		setRawPages(options.pages);
+		setRawUsers(options.users);
 	});
 
 	function setRawPages(newRawPages) {
@@ -343,6 +347,17 @@ ${stepsText}
 
 		rawPages = newRawPages;
 		pages = safeEval(rawPages) || {};
+		renderSteps();
+	}
+
+	function setRawUsers(newRawUsers) {
+		if (newRawUsers === rawUsers) {
+			// No change
+			return;
+		}
+
+		rawUsers = newRawUsers;
+		users = safeEval(rawUsers) || {};
 		renderSteps();
 	}
 

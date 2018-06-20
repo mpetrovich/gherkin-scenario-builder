@@ -7,6 +7,7 @@ const defaultOptions = {
 	value_attr: 'data-test-value',
 	force_attr: 'data-test-force',
 	pages: defaultPages,
+	users: defaultUsers,
 	steps: defaultSteps,
 };
 
