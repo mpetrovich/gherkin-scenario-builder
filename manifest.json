@@ -12,8 +12,9 @@
   "permissions": ["activeTab", "webNavigation", "downloads", "storage"],
   "background": {
     "scripts": [
-      "src/background.js",
-      "vendor/lodash.min.js"
+      "vendor/lodash.min.js",
+      "src/default-steps.js",
+      "src/background.js"
     ],
     "persistent": false
   },
@@ -36,7 +37,7 @@
         "vendor/lodash.min.js",
         "vendor/boundary/boundary.js",
         "vendor/iframeResizer.min.js",
-        "src/step-templates.js",
+        "src/default-steps.js",
         "src/pages.js",
         "src/users.js",
         "src/string-presets.js",

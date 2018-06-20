@@ -6,6 +6,7 @@ const defaultOptions = {
 	element_attr: 'data-test',
 	value_attr: 'data-test-value',
 	force_attr: 'data-test-force',
+	steps: defaultSteps,
 };
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -18,6 +19,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 	if (request.action === 'getOptions') {
 		chrome.storage.sync.get(null, savedOptions => {
+			savedOptions = _.pickBy(savedOptions, option => !!option);  // Omits empty options
 			const options = _.defaults({}, savedOptions, defaultOptions);
 			console.log('bg.getOptions', options);
 			respond(options);
@@ -27,7 +29,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		const changedOptions = _.omit(request, 'action');
 		console.log('bg.setOptions', changedOptions);
 		chrome.storage.sync.set(changedOptions, () => {
-			chrome.storage.sync.get(null, options => {
+			chrome.storage.sync.get(null, savedOptions => {
+				savedOptions = _.pickBy(savedOptions, option => !!option);  // Omits empty options
+				const options = _.defaults({}, savedOptions, defaultOptions);
 				respond(options);
 				notifyAll({ action: request.action, ...options });
 			});

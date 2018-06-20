@@ -9,6 +9,8 @@ $(document).ready(function() {
 	var isFirstTime = true;
 	var isActive = false;
 	var isRecording = false;
+	var rawSteps = '';
+	var stepTemplates = [];
 	var steps = new Steps(stepTemplates);
 	var isElemPickerActive = false;
 	var isCollapsed = false;
@@ -177,21 +179,24 @@ $(document).ready(function() {
 		"Add step" dropdown
 	 */
 
-	let options = _.map(stepTemplates, (steps, category) => {
-		let options = _.map(steps, (template, key) => `<option value="${category}.${key}">${template}</option>`);
-		let group = `<optgroup label="${_.startCase(category)}">${options}</optgroup>`;
-		return group;
-	});
-	options.unshift('<option value="" disabled selected>Add a step...</option>');
-
-	const $addStep = $(`<select name="add_step" class="add-step">${options.join('')}</select>`)
-		.appendTo($stepsWrapper);
+	var $addStep = $(`<select name="add_step" class="add-step"></select>`).appendTo($stepsWrapper);
 
 	$addStep.on('change', () => {
 		const type = $addStep.find('option:selected').val();
 		addStep(type);
 		$addStep.val('');
 	});
+
+	function renderStepPicker() {
+		let options = _.map(stepTemplates, (steps, category) => {
+			let options = _.map(steps, (template, key) => `<option value="${category}.${key}">${template}</option>`);
+			let group = `<optgroup label="${_.startCase(category)}">${options}</optgroup>`;
+			return group;
+		});
+		options.unshift('<option value="" disabled selected>Add a step...</option>');
+
+		$addStep.html(options.join(''));
+	}
 
 	/*
 		Controls
@@ -304,22 +309,53 @@ ${stepsText}
 		options = options || {};
 		attrName = options.element_attr || attrName;
 		attrValueName = options.value_attr || attrValueName;
-		console.log('getOptions', { attrName, attrValueName });
 
 		if (isActive) {
 			updateStylesheet();
 		}
+
+		setRawSteps(options.steps);
+
+		console.log('getOptions', options);
 	});
 
 	listen('setOptions', options => {
-		unbindUserEvents();
+		if (attrName !== options.element_attr || attrValueName !== options.value_attr) {
+			unbindUserEvents();
+			attrName = options.element_attr;
+			attrValueName = options.value_attr;
+			bindUserEvents();
+			updateStylesheet();
+		}
 
-		attrName = options.element_attr;
-		attrValueName = options.value_attr;
-
-		bindUserEvents();
-		updateStylesheet();
+		setRawSteps(options.steps);
 	});
+
+	function setRawSteps(newRawSteps) {
+		if (newRawSteps === rawSteps) {
+			// No change
+			return;
+		}
+
+		rawSteps = newRawSteps;
+		stepTemplates = saveEval(rawSteps) || {};
+		steps = new Steps(stepTemplates);
+		renderStepPicker();
+		reloadSteps();
+	}
+
+	function saveEval(js) {
+		var value;
+
+		try {
+			value = Function(`'use strict'; return (${js})`)();
+		}
+		catch (error) {
+			value = undefined;
+		}
+
+		return value;
+	}
 
 	function setActive(newIsActive) {
 		isActive = newIsActive;
