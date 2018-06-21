@@ -1,2 +1,2 @@
-Cypress Scenario Builder
+![Logo](images/icon-48.png) Cypress Scenario Builder
 ===
