@@ -2,7 +2,7 @@
   "name": "Cypress Scenario Builder",
   "version": "0.0.1",
   "manifest_version": 2,
-  "description": "Generates Gherkin BDD scenarios",
+  "description": "Build Gherkin BDD scenarios automatically by recording your browser actions",
   "homepage_url": "https://github.com/nextbigsoundinc/cypress-scenario-builder",
   "icons": {
     "16": "images/icon-16.png",
