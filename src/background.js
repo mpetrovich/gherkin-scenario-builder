@@ -1,4 +1,4 @@
-var isActive = false;
+var isActiveByTab = {};
 var isRecordingByTab = {};
 var stepsByTab = {};
 
@@ -40,12 +40,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		});
 	}
 	else if (request.action === 'getActive') {
-		respond({ isActive });
+		respond({ isActive: isActiveByTab[sender.tab.id] });
 	}
 	else if (request.action === 'setActive') {
-		isActive = request.isActive;
-		respond({ isActive });
-		notifyAll({ action: request.action, isActive });
+		isActiveByTab[sender.tab.id] = request.isActive;
+		respond({ isActive: isActiveByTab[sender.tab.id] });
+		notifyAll({ action: request.action, isActive: isActiveByTab[sender.tab.id] });
 	}
 	else if (request.action === 'getRecording') {
 		respond({ isRecording: isRecordingByTab[sender.tab.id] || false });
@@ -86,14 +86,14 @@ chrome.webNavigation.onBeforeNavigate.addListener(details => {
 	anchor.href = url;
 	const path = anchor.pathname;
 
-	if (isActive && isRecording && url !== 'about:blank') {
+	if (isActiveByTab[tabId] && isRecording && url !== 'about:blank') {
 		notifyActive({ action: 'navigate', url, path }, tabId);
 	}
 });
 
 chrome.browserAction.onClicked.addListener(tab => {
-	isActive = !isActive;
-	notifyActive({ action: 'setActive', isActive }, tab.id);
+	isActiveByTab[tab.id] = !isActiveByTab[tab.id];
+	notifyActive({ action: 'setActive', isActive: isActiveByTab[tab.id] }, tab.id);
 });
 
 function notifyActive(data, tabId = null) {
