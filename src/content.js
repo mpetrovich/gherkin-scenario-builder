@@ -3,7 +3,7 @@ $(document).ready(function() {
 	var attrValueName;
 
 	const implicitNavigationThreshold = 500;
-	const eventNamespace = 'cypress-scenario-builder';
+	const eventNamespace = 'gherkin-scenario-builder';
 	const listeners = [];
 
 	var isActive = false;
@@ -21,18 +21,18 @@ $(document).ready(function() {
 	var scenarioName = 'Example';
 	var lastUserInteractionTime = Date.now();
 
-	var $iframeBody = Boundary.createBox('cypress-scenario-builder');
-	var $iframe = $('#cypress-scenario-builder');
+	var $iframeBody = Boundary.createBox('gherkin-scenario-builder');
+	var $iframe = $('#gherkin-scenario-builder');
 
-	$iframe.addClass('--cypress-scenario-builder hidden');
+	$iframe.addClass('--gherkin-scenario-builder hidden');
 
-    Boundary.loadBoxJS('#cypress-scenario-builder', chrome.extension.getURL('vendor/iframeResizer.contentWindow.min.js'));
-	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('vendor/fonts.css'));
-	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('vendor/icons.css'));
-	Boundary.loadBoxCSS('#cypress-scenario-builder', chrome.extension.getURL('src/content.css'));
+    Boundary.loadBoxJS('#gherkin-scenario-builder', chrome.extension.getURL('vendor/iframeResizer.contentWindow.min.js'));
+	Boundary.loadBoxCSS('#gherkin-scenario-builder', chrome.extension.getURL('vendor/fonts.css'));
+	Boundary.loadBoxCSS('#gherkin-scenario-builder', chrome.extension.getURL('vendor/icons.css'));
+	Boundary.loadBoxCSS('#gherkin-scenario-builder', chrome.extension.getURL('src/content.css'));
 
 	var $elementLabel = $('<div />')
-		.addClass('--cypress-scenario-builder-element-label')
+		.addClass('--gherkin-scenario-builder-element-label')
 		.appendTo(document.body);
 
 	var $container = $('<div />')
@@ -59,7 +59,7 @@ $(document).ready(function() {
 		const stepId = $pickElemButton.attr('data-step-id');
 
 		const setClasses = () => {
-			$(document).find('body').toggleClass('--cypress-scenario-builder-show-elements', isElemPickerActive);
+			$(document).find('body').toggleClass('--gherkin-scenario-builder-show-elements', isElemPickerActive);
 			$iframeBody.toggleClass('-picking-element', isElemPickerActive);
 			$pickElemButton.toggleClass('-picking-element', isElemPickerActive);
 			$pickElemButton.closest('.step').toggleClass('-picking-element', isElemPickerActive);
@@ -417,7 +417,7 @@ ${stepsText}
 		isCollapsed = newIsCollapsed;
 		$collapseToggle.toggleClass('-collapsed', isCollapsed);
 		$container.toggleClass('-collapsed', isCollapsed);
-		$iframe.toggleClass('--cypress-scenario-builder-collapsed', isCollapsed);
+		$iframe.toggleClass('--gherkin-scenario-builder-collapsed', isCollapsed);
 
 		if (!isCollapsed) {
 			resizeIframe();
@@ -729,8 +729,8 @@ ${stepsText}
 	}
 
 	function addStylesheet() {
-		$('head').append(`<style id="cypress-scenario-builder-styles">
-.--cypress-scenario-builder-show-elements [${attrName}] {
+		$('head').append(`<style id="gherkin-scenario-builder-styles">
+.--gherkin-scenario-builder-show-elements [${attrName}] {
 	outline: 3px solid rgba(255, 0, 170, 0.75);
 	cursor: pointer;
 }
@@ -738,7 +738,7 @@ ${stepsText}
 	}
 
 	function removeStylesheet() {
-		$('#cypress-scenario-builder-styles').remove();
+		$('#gherkin-scenario-builder-styles').remove();
 	}
 
 	function updateStylesheet() {

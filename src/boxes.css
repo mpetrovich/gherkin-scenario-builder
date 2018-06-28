@@ -1,4 +1,4 @@
-#cypress-scenario-builder {
+#gherkin-scenario-builder {
 	position: fixed;
 	z-index: 999999;
 	bottom: 10px;
@@ -12,14 +12,14 @@
 	box-shadow: 0 5px 40px rgba(0, 0, 0, 0.2);
 }
 
-#cypress-scenario-builder.hidden {
+#gherkin-scenario-builder.hidden {
 	display: none !important;
 }
 
-.--cypress-scenario-builder-element-label {
+.--gherkin-scenario-builder-element-label {
 	display: none;
 }
-.--cypress-scenario-builder-show-elements .--cypress-scenario-builder-element-label {
+.--gherkin-scenario-builder-show-elements .--gherkin-scenario-builder-element-label {
 	margin: 3px 0 0 -3px;  /* for outline */
 	padding: 0.5em 1em;
 	font: normal 12px arial, sans-serif;
@@ -27,13 +27,13 @@
 	background: rgba(255, 0, 170, 1);
 }
 
-#cypress-scenario-builder {
+#gherkin-scenario-builder {
 	transition-property: width, height;
 	transition-duration: 0.1s;
 	transition-timing-function: ease-in-out;
 }
 
-#cypress-scenario-builder.--cypress-scenario-builder-collapsed {
+#gherkin-scenario-builder.--gherkin-scenario-builder-collapsed {
 	width: 50px !important;
 	height: 50px !important;
 }

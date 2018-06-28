@@ -1,4 +1,4 @@
-<img src="images/icon-128.png" width="32"> Cypress Scenario Builder
+<img src="images/icon-128.png" width="32"> Gherkin Scenario Builder
 ===
 This Chrome extension can record your behavior and automatically generate Gherkin-compatible given/when/then scenarios.
 
@@ -58,7 +58,7 @@ Installation
 ---
 
 ### Installation from the Chrome Web Store (recommended)
-On the Chrome Web Store: [Cypress Scenario Builder](https://chrome.google.com/webstore/detail/cypress-scenario-builder/bbmabgnlflpjhmljnfbjlddabipleapd)
+On the Chrome Web Store: [Gherkin Scenario Builder](https://chrome.google.com/webstore/detail/gherkin-scenario-builder/bbmabgnlflpjhmljnfbjlddabipleapd)
 
 
 ### Manual installation
@@ -80,7 +80,7 @@ Usage
 ### Turning on & off
 This extension operates on a per-tab basis and is disabled until activated for a specific tab. Once activated for a tab, it will remain active across page navigation, refreshes, etc. until deactivated. To activate or deactivate the extension for the current tab, simply click the extension's icon in your Chrome toolbar:
 
-<img src="images/chrome-toolbar.png" alt="Cypress Scenario Builder in the Chrome toolbar" width="183" style="text-align: center;">
+<img src="images/chrome-toolbar.png" alt="Gherkin Scenario Builder in the Chrome toolbar" width="183" style="text-align: center;">
 
 Once activated, a floating panel will be visible in the lower right hand corner of the tab window:
 
