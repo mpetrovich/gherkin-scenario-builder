@@ -6,7 +6,6 @@ $(document).ready(function() {
 	const eventNamespace = 'cypress-scenario-builder';
 	const listeners = [];
 
-	var isFirstTime = true;
 	var isActive = false;
 	var isRecording = false;
 	var rawPages = '';
@@ -310,12 +309,15 @@ ${stepsText}
 	});
 
 	send('getOptions', {}, options => {
+		unbindUserEvents();
+
 		options = options || {};
 		attrName = options.element_attr || attrName;
 		attrValueName = options.value_attr || attrValueName;
 
 		if (isActive) {
 			updateStylesheet();
+			bindUserEvents();
 		}
 
 		setRawSteps(options.steps);
@@ -405,10 +407,6 @@ ${stepsText}
 	function showPane(isActive) {
 		$iframe.toggleClass('hidden', !isActive);
 		resizeIframe();
-
-		if (isActive && isFirstTime) {
-			isFirstTime = false;
-		}
 	}
 
 	function toggleCollapsed() {
@@ -612,6 +610,10 @@ ${stepsText}
 	}
 
 	function bindUserEvents() {
+
+		if (!attrName || !attrValueName) {
+			return;
+		}
 
 		/*
 			Text/file input
