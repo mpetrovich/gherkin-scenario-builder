@@ -50,6 +50,9 @@ class Steps {
 			else if (i === lastActionIndex) {
 				step.prefix = 'when';
 			}
+			else if (this.steps.length === 1) {
+				step.prefix = 'given';
+			}
 			else {
 				step.prefix = isThenAnd ? 'and' : 'then';
 				isThenAnd = true;
