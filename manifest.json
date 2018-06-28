@@ -2,7 +2,7 @@
   "name": "Gherkin Scenario Builder",
   "version": "1.0.0",
   "manifest_version": 2,
-  "description": "Automatically generate Gherkin given/when/then scenarios by recording browser actions.",
+  "description": "Generate Gherkin given/when/then scenarios interactively.",
   "homepage_url": "https://github.com/nextbigsoundinc/gherkin-scenario-builder",
   "icons": {
     "16": "images/icon-16.png",
