@@ -696,7 +696,7 @@ ${stepsText}
 		 */
 
 		$(document).on(`click.${eventNamespace}`, `[${attrName}]`, function() {
-			const containsInput = $(this).find(':input').not('input[type="submit"]').length > 0;
+			const containsInput = $(this).find(':input:visible').not('input[type="submit"]').length > 0;
 
 			if ($(this).is('input[type="text"') ||
 				$(this).is('input[type="email"') ||
