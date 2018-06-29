@@ -68,6 +68,14 @@ $(document).ready(function() {
 		const hideElementLabel = () => $elementLabel.css({ display: 'none' });
 
 		const clickEventListener = function(event) {
+			const $selectableChildren = $(this).find(`[${attrName}]`);
+			const wasChildClicked = $selectableChildren.filter(() => $.contains(this, event.target)).length > 0;
+
+			if (wasChildClicked) {
+				// Allows this click to pass through to the nested child element
+				return;
+			}
+
 			const elemName = $(this).attr(attrName);
 			const step = steps.find(stepId);
 
