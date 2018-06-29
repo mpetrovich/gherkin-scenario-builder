@@ -141,7 +141,7 @@ $(document).ready(function() {
 		const $input = $(this);
 		const stepId = $input.attr('data-step-id');
 		const step = steps.find(stepId);
-		const paramName = $input.data('paramName');
+		const paramName = $input.attr('data-param-name');
 
 		if (step) {
 			_.set(step, `params.${paramName}`, $input.val());
@@ -181,7 +181,7 @@ $(document).ready(function() {
 	});
 
 	$container.on('click', '.js-remove-step', function() {
-		const stepIndex = $(this).closest('[data-step-index]').data('stepIndex');
+		const stepIndex = $(this).closest('[data-step-index]').attr('data-step-index');
 		steps.remove(stepIndex);
 		onStepsUpdated();
 	});
@@ -465,7 +465,7 @@ ${stepsText}
 
 		$steps.find('.step').each(function() {
 			let $step = $(this);
-			let index = $step.data('stepIndex');
+			let index = $step.attr('data-step-index');
 			reorderedSteps.push(steps.get(index));
 		});
 
