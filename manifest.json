@@ -1,6 +1,6 @@
 {
   "name": "Gherkin Scenario Builder",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "manifest_version": 2,
   "description": "Generate Gherkin given/when/then scenarios interactively.",
   "homepage_url": "https://github.com/nextbigsoundinc/gherkin-scenario-builder",
