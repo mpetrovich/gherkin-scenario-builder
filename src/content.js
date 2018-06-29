@@ -1,8 +1,8 @@
 $(document).ready(function() {
 	var attrName;
 	var attrValueName;
+	var implicitNavigationThreshold;  // in ms
 
-	const implicitNavigationThreshold = 500;
 	const eventNamespace = 'gherkin-scenario-builder';
 	const listeners = [];
 
@@ -296,7 +296,7 @@ ${stepsText}
 
 	listen('navigate', response => {
 		// implicit = user clicked a tracked link/button that triggered navigation
-		const isImplicitNavigation = Date.now() - lastUserInteractionTime < implicitNavigationThreshold;
+		const isImplicitNavigation = (Date.now() - lastUserInteractionTime) < implicitNavigationThreshold;
 
 		if (isImplicitNavigation) {
 			return;
@@ -322,6 +322,7 @@ ${stepsText}
 		options = options || {};
 		attrName = options.element_attr || attrName;
 		attrValueName = options.value_attr || attrValueName;
+		implicitNavigationThreshold = options.nav_threshold || implicitNavigationThreshold;
 
 		if (isActive) {
 			updateStylesheet();
@@ -336,10 +337,14 @@ ${stepsText}
 	});
 
 	listen('setOptions', options => {
-		if (attrName !== options.element_attr || attrValueName !== options.value_attr) {
+		if (attrName !== options.element_attr
+			|| attrValueName !== options.value_attr
+			|| implicitNavigationThreshold !== options.nav_threshold
+		) {
 			unbindUserEvents();
 			attrName = options.element_attr;
 			attrValueName = options.value_attr;
+			implicitNavigationThreshold = options.nav_threshold;
 			bindUserEvents();
 			updateStylesheet();
 		}

@@ -6,6 +6,7 @@ const defaultOptions = {
 	element_attr: 'data-test',
 	value_attr: 'data-test-value',
 	force_attr: 'data-test-force',
+	nav_threshold: 1000,
 	pages: defaultPages,
 	users: defaultUsers,
 	steps: defaultSteps,
