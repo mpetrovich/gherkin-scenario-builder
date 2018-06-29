@@ -64,7 +64,7 @@ body {
 	height: 2.2em;
 	margin: 3px 0;
 	padding: 2px 15px;
-	padding-right: 45px;
+	padding-right: 80px;  /* For action icons */
 	line-height: 2.2em;
 	white-space: nowrap;
 	cursor: -webkit-grab;
@@ -109,9 +109,9 @@ body {
 	font-size: 0.75em;
 }
 
+.copy-step,
 .remove-step {
 	position: absolute;
-	right: 15px;
 	top: 50%;
 	transform: translateY(-50%);
 	padding: 0.3em;
@@ -119,7 +119,17 @@ body {
 	color: #000;
 	opacity: 0.3;
 }
-.step:hover .remove-step {
+
+.copy-step {
+	right: 40px;
+}
+
+.remove-step {
+	right: 15px;
+}
+
+.copy-step:hover,
+.remove-step:hover {
 	opacity: 0.6;
 }
 

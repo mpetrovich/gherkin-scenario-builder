@@ -180,9 +180,15 @@ $(document).ready(function() {
 		$input.change();
 	});
 
+	$container.on('click', '.js-copy-step', function() {
+		const stepId = $(this).closest('[data-step-id]').attr('data-step-id');
+		steps.duplicate(stepId);
+		onStepsUpdated();
+	});
+
 	$container.on('click', '.js-remove-step', function() {
-		const stepIndex = $(this).closest('[data-step-index]').attr('data-step-index');
-		steps.remove(stepIndex);
+		const stepId = $(this).closest('[data-step-id]').attr('data-step-id');
+		steps.remove(stepId);
 		onStepsUpdated();
 	});
 
@@ -248,7 +254,7 @@ $(document).ready(function() {
 	});
 
 	$copy.on('click', () => {
-		let stepsText = getCopyableSteps(steps.get());
+		let stepsText = getCopyableSteps(steps.getAll());
 		$stepsText.val(stepsText);
 		copyText($iframe, $stepsText);
 		$copy.html('<i class="icon icon-copy"></i> Copied');
@@ -262,7 +268,7 @@ $(document).ready(function() {
 		scenarioName = window.prompt('Enter a title for the scenario:', scenarioName);
 
 		const filename = _.kebabCase(featureName) + '.feature';
-		const stepsText = getCopyableSteps(steps.get());
+		const stepsText = getCopyableSteps(steps.getAll());
 		const content = `Feature: ${featureName}
 ===
 
@@ -444,7 +450,7 @@ ${stepsText}
 	}
 
 	function renderSteps() {
-		let stepsFormatted = getFormattedSteps(steps.get());
+		let stepsFormatted = getFormattedSteps(steps.getAll());
 
 		if (stepsFormatted.length) {
 			$steps.html(stepsFormatted.join(''));
@@ -470,8 +476,8 @@ ${stepsText}
 
 		$steps.find('.step').each(function() {
 			let $step = $(this);
-			let index = $step.attr('data-step-index');
-			reorderedSteps.push(steps.get(index));
+			let stepId = $step.attr('data-step-id');
+			reorderedSteps.push(steps.get(stepId));
 		});
 
 		setSteps(reorderedSteps);
@@ -497,7 +503,7 @@ ${stepsText}
 	}
 
 	function setSteps(newSteps) {
-		steps.set(newSteps);
+		steps.setAll(newSteps);
 		onStepsUpdated();
 	}
 
@@ -507,7 +513,7 @@ ${stepsText}
 	}
 
 	function saveSteps() {
-		send('setSteps', { steps: steps.get() });
+		send('setSteps', { steps: steps.getAll() });
 	}
 
 	function reloadSteps() {
@@ -596,9 +602,10 @@ ${stepsText}
 			const prefix = step.prefix ? `${_.startCase(step.prefix)} ` : '';
 
 			return `
-				<div class="step" data-step-index="${index}">
+				<div class="step" data-step-id="${step.id}">
 					${prefix}${text}
-					<i class="remove-step icon-close js-remove-step"></i>
+					<i class="copy-step icon-copy js-copy-step" title="Duplicate this step"></i>
+					<i class="remove-step icon-close js-remove-step" title="Remove this step"></i>
 				</div>
 			`;
 		});
