@@ -528,18 +528,20 @@ ${stepsText}
 
 	function getCopyableStep(stepTemplate, params) {
 		return _.reduce(params, (stepText, paramValue, paramName) => {
-			return stepText.replace(`{${paramName}}`, `"${paramValue}"`);
+			const isStringValue = (paramName === 'string' || paramName === 'element' || paramName === 'page' || paramName === 'user');
+			const outputValue = isStringValue ? `"${paramValue}"` : paramValue;
+			return stepText.replace(`{${paramName}}`, outputValue);
 		}, stepTemplate);
 	}
 
 	function getFormattedSteps(steps) {
 		return _.map(steps, (step, index) => {
 
-			text = step.template.replace(/({string}|{page}|{user}|{int}|{float}|{element})/g, (match, param) => {
-				if (param === '{int}' || param === '{float}') {
-					return `<input type="number" class="pick-number" data-step-id="${step.id}" data-param-name="${param}" value="${step.params[param]}">`;
+			text = step.template.replace(/\{(string|page|user|int|float|element)\}/g, (match, param) => {
+				if (param === 'int' || param === 'float') {
+					return `<input type="number" class="pick-number" data-step-id="${step.id}" data-param-name="${param}" value="${step.params[param] || 0}">`;
 				}
-				else if (param === '{string}') {
+				else if (param === 'string') {
 					const optgroups = _.map(stringPresets, (presets, category) => {
 						const options = _.map(presets, preset => `<option value="${_.escape(preset)}">${_.escape(preset)}</option>`);
 						return `<optgroup label="${_.startCase(category)}">${options}</optgroup>`;
@@ -553,7 +555,7 @@ ${stepsText}
 						</select>
 					`;
 				}
-				else if (param === '{page}') {
+				else if (param === 'page') {
 					const options = _.map(pages, (path, page) => `<option value="${_.escape(page)}">${_.escape(page)}</option>`);
 					return `
 						<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="page" value="${step.params.page || ''}">
@@ -563,7 +565,7 @@ ${stepsText}
 						</select>
 					`;
 				}
-				else if (param === '{user}') {
+				else if (param === 'user') {
 					const options = _.map(users, (info, user) => `<option value="${_.escape(user)}">${_.escape(user)}</option>`);
 					return `
 						<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="user" value="${step.params.user || ''}">
@@ -573,7 +575,7 @@ ${stepsText}
 						</select>
 					`;
 				}
-				else if (param === '{element}') {
+				else if (param === 'element') {
 					let elemName = step.params.element || '<i class="icon icon-mouse-pointer"></i> Choose element';
 					let className = step.params.element ? '-picked' : '';
 					return `
