@@ -184,6 +184,7 @@ $(document).ready(function() {
 		const stepId = $(this).closest('[data-step-id]').attr('data-step-id');
 		steps.duplicate(stepId);
 		onStepsUpdated();
+		scrollToBottom();
 	});
 
 	$container.on('click', '.js-remove-step', function() {
