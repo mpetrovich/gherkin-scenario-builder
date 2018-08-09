@@ -323,8 +323,6 @@ ${stepsText}
 		setRawSteps(options.steps);
 		setRawPages(options.pages);
 		setRawUsers(options.users);
-
-		console.log('getOptions', options);
 	});
 
 	listen('setOptions', options => {
@@ -602,10 +600,6 @@ ${stepsText}
 			console.error(`Error copying: ${error}`);
 		}
 
-		if (success) {
-			console.log('Copied!');
-		}
-
 		window.getSelection().removeAllRanges();
 	}
 
@@ -747,7 +741,6 @@ ${stepsText}
 	}
 
 	function send(action, params, callback = () => {}) {
-		console.log('send', action, params);
 		chrome.runtime.sendMessage({ action: action, ...params }, callback);
 	}
 
@@ -757,9 +750,7 @@ ${stepsText}
 	}
 
 	chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-		console.log('request', request);
 		for (const listener of listeners[request.action]) {
-			console.log(`listen.${request.action}`, request);
 			listener(request);
 		}
 	});

@@ -2,7 +2,6 @@ const options = {};
 
 send('getOptions', {}, savedOpts => {
 	_.assign(options, savedOpts);
-	console.log('options', options);
 
 	$(':input').each(function() {
 		const $input = $(this);
@@ -41,6 +40,5 @@ $('.use-default-steps').click((event) => {
 });
 
 function send(action, params, callback = () => {}) {
-	console.log('send', action, params);
 	chrome.runtime.sendMessage({ action: action, ...params }, callback);
 }

@@ -13,23 +13,18 @@ const defaultOptions = {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	const respond = result => {
-		console.log('bg.response', result);
 		sendResponse(result || {});
 	};
-
-	console.log('bg.request', request);
 
 	if (request.action === 'getOptions') {
 		chrome.storage.sync.get(null, savedOptions => {
 			savedOptions = _.pickBy(savedOptions, option => !!option);  // Omits empty options
 			const options = _.defaults({}, savedOptions, defaultOptions);
-			console.log('bg.getOptions', options);
 			respond(options);
 		});
 	}
 	else if (request.action === 'setOptions') {
 		const changedOptions = _.omit(request, 'action');
-		console.log('bg.setOptions', changedOptions);
 		chrome.storage.sync.set(changedOptions, () => {
 			chrome.storage.sync.get(null, savedOptions => {
 				savedOptions = _.pickBy(savedOptions, option => !!option);  // Omits empty options
@@ -97,14 +92,12 @@ chrome.browserAction.onClicked.addListener(tab => {
 });
 
 function notifyActive(data, tabId = null) {
-	console.log('bg.notify', data);
 	chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
 		chrome.tabs.sendMessage(tabId || tabs[0].id, data);
 	});
 }
 
 function notifyAll(data) {
-	console.log('bg.notifyAll', data);
 	chrome.tabs.query({}, tabs => {
 		for (const tab of tabs) {
 			chrome.tabs.sendMessage(tab.id, data);
