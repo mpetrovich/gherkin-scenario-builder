@@ -6,6 +6,7 @@ const defaultOptions = {
 	element_attr: 'data-test',
 	value_attr: 'data-test-value',
 	force_attr: 'data-test-force',
+	nav_threshold: 1000,
 	pages: defaultPages,
 	users: defaultUsers,
 	steps: defaultSteps,
@@ -75,6 +76,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 chrome.webNavigation.onBeforeNavigate.addListener(details => {
 	const { tabId, url } = details;
+	onUrlChange({ tabId, url });
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+	if (changeInfo.url) {
+		onUrlChange({ tabId, url: changeInfo.url });
+	}
+});
+
+chrome.browserAction.onClicked.addListener(tab => {
+	isActiveByTab[tab.id] = !isActiveByTab[tab.id];
+	notifyActive({ action: 'setActive', isActive: isActiveByTab[tab.id] }, tab.id);
+});
+
+function onUrlChange(details) {
+	const { tabId, url } = details;
 	const isRecording = isRecordingByTab[tabId];
 
 	const anchor = document.createElement('a');
@@ -84,12 +101,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(details => {
 	if (isActiveByTab[tabId] && isRecording && url !== 'about:blank') {
 		notifyActive({ action: 'navigate', url, path }, tabId);
 	}
-});
-
-chrome.browserAction.onClicked.addListener(tab => {
-	isActiveByTab[tab.id] = !isActiveByTab[tab.id];
-	notifyActive({ action: 'setActive', isActive: isActiveByTab[tab.id] }, tab.id);
-});
+}
 
 function notifyActive(data, tabId = null) {
 	chrome.tabs.query({ active: true, currentWindow: true }, tabs => {

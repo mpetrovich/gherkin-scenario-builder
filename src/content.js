@@ -1,8 +1,8 @@
 $(document).ready(function() {
 	var attrName;
 	var attrValueName;
+	var implicitNavigationThreshold;  // in ms
 
-	const implicitNavigationThreshold = 500;
 	const eventNamespace = 'gherkin-scenario-builder';
 	const listeners = [];
 
@@ -68,6 +68,14 @@ $(document).ready(function() {
 		const hideElementLabel = () => $elementLabel.css({ display: 'none' });
 
 		const clickEventListener = function(event) {
+			const $selectableChildren = $(this).find(`[${attrName}]`);
+			const wasChildClicked = $selectableChildren.filter(() => $.contains(this, event.target)).length > 0;
+
+			if (wasChildClicked) {
+				// Allows this click to pass through to the nested child element
+				return;
+			}
+
 			const elemName = $(this).attr(attrName);
 			const step = steps.find(stepId);
 
@@ -133,7 +141,7 @@ $(document).ready(function() {
 		const $input = $(this);
 		const stepId = $input.attr('data-step-id');
 		const step = steps.find(stepId);
-		const paramName = $input.data('paramName');
+		const paramName = $input.attr('data-param-name');
 
 		if (step) {
 			_.set(step, `params.${paramName}`, $input.val());
@@ -172,9 +180,16 @@ $(document).ready(function() {
 		$input.change();
 	});
 
+	$container.on('click', '.js-copy-step', function() {
+		const stepId = $(this).closest('[data-step-id]').attr('data-step-id');
+		steps.duplicate(stepId);
+		onStepsUpdated();
+		scrollToBottom();
+	});
+
 	$container.on('click', '.js-remove-step', function() {
-		const stepIndex = $(this).closest('[data-step-index]').data('stepIndex');
-		steps.remove(stepIndex);
+		const stepId = $(this).closest('[data-step-id]').attr('data-step-id');
+		steps.remove(stepId);
 		onStepsUpdated();
 	});
 
@@ -240,7 +255,7 @@ $(document).ready(function() {
 	});
 
 	$copy.on('click', () => {
-		let stepsText = getCopyableSteps(steps.get());
+		let stepsText = getCopyableSteps(steps.getAll());
 		$stepsText.val(stepsText);
 		copyText($iframe, $stepsText);
 		$copy.html('<i class="icon icon-copy"></i> Copied');
@@ -254,7 +269,7 @@ $(document).ready(function() {
 		scenarioName = window.prompt('Enter a title for the scenario:', scenarioName);
 
 		const filename = _.kebabCase(featureName) + '.feature';
-		const stepsText = getCopyableSteps(steps.get());
+		const stepsText = getCopyableSteps(steps.getAll());
 		const content = `Feature: ${featureName}
 ===
 
@@ -288,7 +303,7 @@ ${stepsText}
 
 	listen('navigate', response => {
 		// implicit = user clicked a tracked link/button that triggered navigation
-		const isImplicitNavigation = Date.now() - lastUserInteractionTime < implicitNavigationThreshold;
+		const isImplicitNavigation = (Date.now() - lastUserInteractionTime) < implicitNavigationThreshold;
 
 		if (isImplicitNavigation) {
 			return;
@@ -314,6 +329,7 @@ ${stepsText}
 		options = options || {};
 		attrName = options.element_attr || attrName;
 		attrValueName = options.value_attr || attrValueName;
+		implicitNavigationThreshold = options.nav_threshold || implicitNavigationThreshold;
 
 		if (isActive) {
 			updateStylesheet();
@@ -326,10 +342,14 @@ ${stepsText}
 	});
 
 	listen('setOptions', options => {
-		if (attrName !== options.element_attr || attrValueName !== options.value_attr) {
+		if (attrName !== options.element_attr
+			|| attrValueName !== options.value_attr
+			|| implicitNavigationThreshold !== options.nav_threshold
+		) {
 			unbindUserEvents();
 			attrName = options.element_attr;
 			attrValueName = options.value_attr;
+			implicitNavigationThreshold = options.nav_threshold;
 			bindUserEvents();
 			updateStylesheet();
 		}
@@ -429,7 +449,7 @@ ${stepsText}
 	}
 
 	function renderSteps() {
-		let stepsFormatted = getFormattedSteps(steps.get());
+		let stepsFormatted = getFormattedSteps(steps.getAll());
 
 		if (stepsFormatted.length) {
 			$steps.html(stepsFormatted.join(''));
@@ -455,8 +475,8 @@ ${stepsText}
 
 		$steps.find('.step').each(function() {
 			let $step = $(this);
-			let index = $step.data('stepIndex');
-			reorderedSteps.push(steps.get(index));
+			let stepId = $step.attr('data-step-id');
+			reorderedSteps.push(steps.get(stepId));
 		});
 
 		setSteps(reorderedSteps);
@@ -482,7 +502,7 @@ ${stepsText}
 	}
 
 	function setSteps(newSteps) {
-		steps.set(newSteps);
+		steps.setAll(newSteps);
 		onStepsUpdated();
 	}
 
@@ -492,7 +512,7 @@ ${stepsText}
 	}
 
 	function saveSteps() {
-		send('setSteps', { steps: steps.get() });
+		send('setSteps', { steps: steps.getAll() });
 	}
 
 	function reloadSteps() {
@@ -518,18 +538,20 @@ ${stepsText}
 
 	function getCopyableStep(stepTemplate, params) {
 		return _.reduce(params, (stepText, paramValue, paramName) => {
-			return stepText.replace(`{${paramName}}`, `"${paramValue}"`);
+			const isStringValue = (paramName === 'string' || paramName === 'element' || paramName === 'page' || paramName === 'user');
+			const outputValue = isStringValue ? `"${paramValue}"` : paramValue;
+			return stepText.replace(`{${paramName}}`, outputValue);
 		}, stepTemplate);
 	}
 
 	function getFormattedSteps(steps) {
 		return _.map(steps, (step, index) => {
 
-			text = step.template.replace(/({string}|{page}|{user}|{int}|{float}|{element})/g, (match, param) => {
-				if (param === '{int}' || param === '{float}') {
-					return `<input type="number" class="pick-number" data-step-id="${step.id}" data-param-name="${param}" value="${step.params[param]}">`;
+			text = step.template.replace(/\{(string|page|user|int|float|element)\}/g, (match, param) => {
+				if (param === 'int' || param === 'float') {
+					return `<input type="number" class="pick-number" data-step-id="${step.id}" data-param-name="${param}" value="${step.params[param] || 0}">`;
 				}
-				else if (param === '{string}') {
+				else if (param === 'string') {
 					const optgroups = _.map(stringPresets, (presets, category) => {
 						const options = _.map(presets, preset => `<option value="${_.escape(preset)}">${_.escape(preset)}</option>`);
 						return `<optgroup label="${_.startCase(category)}">${options}</optgroup>`;
@@ -543,7 +565,7 @@ ${stepsText}
 						</select>
 					`;
 				}
-				else if (param === '{page}') {
+				else if (param === 'page') {
 					const options = _.map(pages, (path, page) => `<option value="${_.escape(page)}">${_.escape(page)}</option>`);
 					return `
 						<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="page" value="${step.params.page || ''}">
@@ -553,7 +575,7 @@ ${stepsText}
 						</select>
 					`;
 				}
-				else if (param === '{user}') {
+				else if (param === 'user') {
 					const options = _.map(users, (info, user) => `<option value="${_.escape(user)}">${_.escape(user)}</option>`);
 					return `
 						<input type="text" class="pick-string" data-step-id="${step.id}" data-param-name="user" value="${step.params.user || ''}">
@@ -563,7 +585,7 @@ ${stepsText}
 						</select>
 					`;
 				}
-				else if (param === '{element}') {
+				else if (param === 'element') {
 					let elemName = step.params.element || '<i class="icon icon-mouse-pointer"></i> Choose element';
 					let className = step.params.element ? '-picked' : '';
 					return `
@@ -579,9 +601,10 @@ ${stepsText}
 			const prefix = step.prefix ? `${_.startCase(step.prefix)} ` : '';
 
 			return `
-				<div class="step" data-step-index="${index}">
+				<div class="step" data-step-id="${step.id}">
 					${prefix}${text}
-					<i class="remove-step icon-close js-remove-step"></i>
+					<i class="copy-step icon-copy js-copy-step" title="Duplicate this step"></i>
+					<i class="remove-step icon-close js-remove-step" title="Remove this step"></i>
 				</div>
 			`;
 		});
@@ -690,7 +713,7 @@ ${stepsText}
 		 */
 
 		$(document).on(`click.${eventNamespace}`, `[${attrName}]`, function() {
-			const containsInput = $(this).find(':input').not('input[type="submit"]').length > 0;
+			const containsInput = $(this).find(':input:visible').not('input[type="submit"]').length > 0;
 
 			if ($(this).is('input[type="text"') ||
 				$(this).is('input[type="email"') ||

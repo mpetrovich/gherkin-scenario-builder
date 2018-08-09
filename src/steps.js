@@ -5,34 +5,69 @@ class Steps {
 		this.steps = [];
 	}
 
-	get(index = null) {
-		return index === null ? this.steps : this.steps[index];
+	getAll() {
+		return _.cloneDeep(this.steps);
 	}
 
-	find(id) {
-		return _.find(this.steps, ['id', id]);
-	}
-
-	set(steps) {
+	setAll(steps) {
 		this.steps = steps;
 		this._setPrefixes();
 	}
 
+	get(id) {
+		const index = _.findIndex(this.steps, ['id', id]);
+
+		if (index === -1) {
+			return null;
+		}
+
+		return _.cloneDeep(this.steps[index]);
+	}
+
+	find(id) {
+		return _.cloneDeep(_.find(this.steps, ['id', id]));
+	}
+
 	replace(id, step) {
 		const index = _.findIndex(this.steps, ['id', id]);
+
+		if (index === -1) {
+			return;
+		}
+
 		this.steps.splice(index, 1, step);
+		this._setPrefixes();
+	}
+
+	duplicate(id) {
+		const step = this.get(id);
+		step.id = this._generateId();
+
+		const index = _.findIndex(this.steps, ['id', id]);
+		this.steps.splice(index + 1, 0, step);
+
 		this._setPrefixes();
 	}
 
 	add(type, params = {}) {
 		const template = _.get(this.stepTemplates, type);
-		const id = _.uniqueId(_.random(1, 1000));
+		const id = this._generateId();
 		this.steps.push({ id, type, params, template });
 		this._setPrefixes();
 	}
 
-	remove(index) {
+	remove(id) {
+		const index = _.findIndex(this.steps, ['id', id]);
+
+		if (index === -1) {
+			return;
+		}
+
 		this.steps.splice(index, 1);
+	}
+
+	_generateId() {
+		return _.uniqueId(_.random(1, 1000));
 	}
 
 	_setPrefixes() {
@@ -49,6 +84,9 @@ class Steps {
 			}
 			else if (i === lastActionIndex) {
 				step.prefix = 'when';
+			}
+			else if (this.steps.length === 1) {
+				step.prefix = 'given';
 			}
 			else {
 				step.prefix = isThenAnd ? 'and' : 'then';

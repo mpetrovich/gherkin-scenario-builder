@@ -19,8 +19,18 @@ input.-saved + .save-icon {
 	visibility: visible;
 }
 
+label {
+	display: block;
+	font-weight: bold;
+}
+
 input {
 	font-family: courier, monospace;
+}
+
+.info {
+	display: block;
+	font-style: italic;
 }
 
 textarea {
